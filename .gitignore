@@ -1,4 +1,14 @@
+# Dossiers générés automatiquement
 /vendor/
-/.env
 /node_modules/
-/css/*.css
+/public/css/   # si tu compiles ton SCSS ici
+
+# Fichiers de configuration sensibles
+.env
+
+# Système
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
