@@ -1,7 +1,7 @@
 # Dossiers générés automatiquement
 /vendor/
 /node_modules/
-/public/css/   # si tu compiles ton SCSS ici
+/public/css/
 composer.lock
 # Fichiers de configuration sensibles
 .env
