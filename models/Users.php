@@ -3,14 +3,14 @@ class Users
 {
     private ?int $id = null;      
     private string $pseudo;
-    private string $email;
+    private string $mail;
     private string $password;
     private string $role;
 
-    public function __construct(string $pseudo, string $email, string $password, string $role = 'user', bool $hashed = false)
+    public function __construct(string $pseudo, string $mail, string $password, string $role = 'user', bool $hashed = false)
     {
         $this->setPseudo($pseudo);
-        $this->setEmail($email);
+        $this->setMail($mail);
         $this->setPassword($password, $hashed);
         $this->setRole($role);
     }
@@ -25,9 +25,14 @@ class Users
         return $this->pseudo;
     }
 
-    public function getEmail(): string
+    public function getMail(): string
     {
-        return $this->email;
+        return $this->mail;
+    }
+    
+    public function getPassword(): string
+    {
+        return $this->password;
     }
 
     public function getRole(): string
@@ -48,12 +53,12 @@ class Users
         $this->pseudo = $pseudo;
     }
 
-    public function setEmail(string $email): void
+    public function setMail(string $mail): void
     {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
             throw new Exception("Email invalide.");
         }
-        $this->email = $email;
+        $this->mail = $mail;
     }
 
     public function setPassword(string $password, bool $hashed = false): void
