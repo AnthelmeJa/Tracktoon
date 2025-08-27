@@ -27,7 +27,6 @@ class Scores
     { 
         return $this->score; 
     }
-
     
     public function setUserId(int $userId): void
     {

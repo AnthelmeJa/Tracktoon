@@ -118,4 +118,32 @@ class BooksManager extends AbstractManager
         return $books;
     }
 
+    public function getTrending(int $limit = 30): array
+    {
+        $queryTrending = $this->db->prepare(
+            "SELECT b.*,
+                    COUNT(s.id_user) AS votes,
+                    ROUND(AVG(s.score), 2) AS avg_score
+            FROM books b
+            JOIN scores s ON s.id_book = b.id
+            GROUP BY b.id
+            HAVING votes > 0
+            ORDER BY votes DESC, avg_score DESC
+            LIMIT :limit"
+        );
+        $queryTrending->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $queryTrending->execute();
+
+        $items = [];
+        while ($rowTrending = $queryTrending->fetch(PDO::FETCH_ASSOC)) {
+            $book = new Book($rowTrending['title'], $rowTrending['type'], $rowTrending['description'], $rowTrending['image'], (int)$rowTrending['chapter']);
+            $book->setId((int)$rowTrending['id']);
+            $items[] = [
+                'book'  => $book,
+                'votes' => (int)$rowTrending['votes'],
+                'avg'   => $rowTrending['avg_score'] !== null ? (float)$rowTrending['avg_score'] : null,
+            ];
+        }
+        return $items;
+    }
 }
