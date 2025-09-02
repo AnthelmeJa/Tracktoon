@@ -5,11 +5,15 @@ abstract class AbstractManager
 
     public function __construct()
     {
-        $connexion = "mysql:host=".$_ENV["DB_HOST"].";port=3306;charset=".$_ENV["DB_CHARSET"].";dbname=".$_ENV["DB_NAME"];
-        $this->db = new PDO(
-            $connexion,
-            $_ENV["DB_USER"],
-            $_ENV["DB_PASSWORD"]
-        );
+        $host    = $_ENV['DB_HOST'];
+        $port    = $_ENV['DB_PORT'] ?? '3306';
+        $dbName  = $_ENV['DB_NAME'];
+        $charset = $_ENV['DB_CHARSET'];
+        $user    = $_ENV['DB_USER'];
+        $pass    = $_ENV['DB_PASSWORD'];
+
+        $dsn = "mysql:host={$host};port={$port};dbname={$dbName};charset={$charset}";
+
+        $this->db = new PDO($dsn, $user, $pass);
     }
 }
