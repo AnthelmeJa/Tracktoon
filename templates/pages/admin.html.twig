@@ -1,0 +1,66 @@
+<h1>Espace admin</h1>
+
+{% if error %}<p style="color:red">{{ error }}</p>{% endif %}
+{% if success %}<p style="color:green">{{ success }}</p>{% endif %}
+
+<h2>1) Ajouter un book</h2>
+<form method="post" action="?route=admin-add-book">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>Titre</label><input name="title" required>
+  <label>Type</label>
+  <select name="type" required>
+    <option value="manga">manga</option>
+    <option value="manwha">manwha</option>
+    <option value="manhua">manhua</option>
+  </select>
+  <label>Description</label><textarea name="description" required></textarea>
+  <label>Image (URL)</label><input name="image">
+  <label>Chapitre (num)</label><input name="chapter" type="number" min="1">
+  <label>Genres (séparés par des virgules)</label><input name="genders" placeholder="action,drama">
+  <button type="submit">Ajouter</button>
+</form>
+
+<hr>
+
+<h2>2) Mettre à jour un utilisateur</h2>
+<form method="post" action="?route=admin-update-user">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>ID utilisateur</label><input name="id" type="number" required>
+  <label>Pseudo</label><input name="pseudo">
+  <label>Email</label><input name="mail" type="email">
+  <label>Rôle</label>
+  <select name="role">
+    <option>user</option><option>admin</option><option>super_admin</option>
+  </select>
+  <label>Nouveau mot de passe (optionnel)</label>
+  <input name="password" type="password" autocomplete="new-password">
+  <button type="submit">Mettre à jour</button>
+</form>
+
+<hr>
+
+<h2>3) Supprimer un utilisateur</h2>
+<form method="post" action="?route=admin-delete-user" onsubmit="return confirm('Supprimer cet utilisateur ?');">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>ID utilisateur</label><input name="id" type="number" required>
+  <button type="submit">Supprimer</button>
+</form>
+
+<hr>
+
+<h2>4) Trouver un utilisateur par email</h2>
+<form method="post" action="?route=admin-find-user">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>Email</label><input name="mail" type="email" required>
+  <button type="submit">Chercher</button>
+</form>
+
+{% if found_user %}
+  <h3>Résultat</h3>
+  <ul>
+    <li>ID: {{ found_user.id }}</li>
+    <li>Pseudo: {{ found_user.pseudo }}</li>
+    <li>Email: {{ found_user.mail }}</li>
+    <li>Rôle: {{ found_user.role }}</li>
+  </ul>
+{% endif %}

@@ -39,8 +39,14 @@ class UserController
         $user = $this->users->findByMail($mail);
 
         if ($user && $user->verifyPassword($password)) {
+            session_regenerate_id(true);
+
             $_SESSION['user_id'] = $user->getId();
             $_SESSION['role']    = $user->getRole();
+
+            if (in_array($_SESSION['role'], ['admin','super_admin'], true)) {
+                $this->redirect('?route=admin'); return;
+            }
             $this->redirect('?route=home'); return;
         }
 
@@ -89,7 +95,7 @@ class UserController
         try {
             $user = new Users($pseudo, $mail, $password, 'user');
             $created = $this->users->create($user);
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             $_SESSION['error'] = 'Entrées invalides';
             $this->redirect('?route=register'); return;
         }

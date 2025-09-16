@@ -26,37 +26,26 @@ class BooksManager extends AbstractManager
             $bookId = (int) $this->db->lastInsertId();
             $book->setId($bookId);
 
-            foreach ($book->getGenders() as $gender) {
+            $gm = new GendersManager($this->db); // partage la transaction
 
-                
-                $check = $this->db->prepare('SELECT id FROM genders WHERE gender = :gender');
-                $check->execute(['gender' => $gender]);
-                $result = $check->fetch(PDO::FETCH_ASSOC);
+            foreach ($book->getGenders() as $name) {
+                $gender   = $gm->findOrCreateByName($name);
+                $genderId = (int)$gender->getId();
 
-                if ($result) {
-                    $genderId = (int) $result['id'];
-                } else {
-                    
-                    $insert = $this->db->prepare('INSERT INTO genders (gender) VALUES (:gender)');
-                    $insert->execute(['gender' => $gender]);
-                    $genderId = (int) $this->db->lastInsertId();
-                }
-
-                $link = $this->db->prepare('INSERT INTO books_genders (id_book, id_gender) VALUES (:book, :gender)');
-                $link->execute([
-                    'book'   => $bookId,
-                    'gender' => $genderId
-                ]);
+                $link = $this->db->prepare(
+                    'INSERT INTO books_genders (id_book, id_gender) VALUES (:book, :gender)'
+                );
+                $link->execute(['book' => $bookId, 'gender' => $genderId]);
             }
 
             $this->db->commit();
             return $book;
 
         } catch (Exception $e) {
-            $this->db->rollBack();
-            throw $e;
+                $this->db->rollBack();
+                throw $e;
+            }
         }
-    }
 
     public function findAllFiltered(
         ?string $title = null,

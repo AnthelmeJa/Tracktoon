@@ -81,11 +81,12 @@ class Book
 
     public function setType(string $type): void
     {
-        $allowedTypes = ['manwha', 'manhua', 'manga']; 
-        if (!in_array($type, $allowedTypes, true)) {
+        $allowed = ['manhwa', 'manhua', 'manga'];
+        $t = strtolower(trim($type));
+        if (!in_array($t, $allowed, true)) {
             throw new Exception("Type invalide.");
         }
-        $this->type = $type;
+        $this->type = $t;
     }
 
     public function setDescription(string $description): void

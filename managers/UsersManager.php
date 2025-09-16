@@ -6,6 +6,26 @@ class UsersManager extends AbstractManager
         parent::__construct();
     }
 
+    public function findOne(int $id): ?Users
+    {
+        $query = $this->db->prepare('SELECT * FROM users WHERE id = :id');
+        $query->execute(['id' => $id]);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            $user = new Users(
+                $result['pseudo'],
+                $result['mail'],
+                $result['password'],
+                $result['role'],
+                true
+            );
+            $user->setId((int) $result['id']);
+            return $user;
+        }
+        return null;
+    }
+
     public function findByMail(string $mail): ?Users
     {
         $query = $this->db->prepare('SELECT * FROM users WHERE mail = :mail');
