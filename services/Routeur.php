@@ -66,6 +66,15 @@ class Router
         else if ($route === 'admin-find-user') {
             $this->ac->findUser();
         }
+        else if ($route === 'admin-update-book') {
+            $this->ac->updateBook();;
+        }
+        else if ($route === 'admin-delete-book') {
+            $this->ac->deleteBook();
+        }
+        else if ($route === 'admin-find-book') {
+            $this->ac->findBook();
+        }
         else {
             echo $this->twig->render('pages/home.html.twig', [
                 'logged' => isset($_SESSION['user_id']),

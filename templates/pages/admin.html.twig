@@ -10,7 +10,7 @@
   <label>Type</label>
   <select name="type" required>
     <option value="manga">manga</option>
-    <option value="manwha">manwha</option>
+    <option value="manhwa">manhwa</option>
     <option value="manhua">manhua</option>
   </select>
   <label>Description</label><textarea name="description" required></textarea>
@@ -64,3 +64,56 @@
     <li>Rôle: {{ found_user.role }}</li>
   </ul>
 {% endif %}
+
+<hr>
+
+<h2>4b) Trouver un livre par titre (exact)</h2>
+<form method="post" action="?route=admin-find-book">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>Titre exact</label>
+  <input name="title" required>
+  <button type="submit">Chercher</button>
+</form>
+
+{% if found_book %}
+  <h3>Résultat livre</h3>
+  <ul>
+    <li>ID: {{ found_book.id }}</li>
+    <li>Titre: {{ found_book.title }}</li>
+    <li>Type: {{ found_book.type }}</li>
+    <li>Chapitre: {{ found_book.chapter ?? '—' }}</li>
+    <li>Genres: {{ found_book.genders|join(', ') }}</li>
+  </ul>
+{% endif %}
+
+<hr>
+
+<h2>5) Mettre à jour un livre</h2>
+<form method="post" action="?route=admin-update-book">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>ID livre</label>
+  <input name="id" type="number" required value="{{ found_book.id is defined ? found_book.id : '' }}">
+  <label>Titre</label><input name="title" placeholder="(laisser vide pour ne pas changer)">
+  <label>Type</label>
+  <select name="type">
+    <option value="">(inchangé)</option>
+    <option value="manga">manga</option>
+    <option value="manhua">manhua</option>
+    <option value="manhwa">manhwa</option>
+  </select>
+  <label>Description</label><textarea name="description" placeholder="(inchangé)"></textarea>
+  <label>Image (URL)</label><input name="image" placeholder="(inchangé)">
+  <label>Chapitre (num)</label><input name="chapter" type="number" min="1" placeholder="(inchangé)">
+  <label>Genres (virgules) — vide = inchangé</label><input name="genders" placeholder="action,drama">
+  <button type="submit">Mettre à jour</button>
+</form>
+
+<hr>
+
+<h2>6) Supprimer un livre</h2>
+<form method="post" action="?route=admin-delete-book" onsubmit="return confirm('Supprimer ce livre ?');">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>ID livre</label>
+  <input name="id" type="number" required value="{{ found_book.id is defined ? found_book.id : '' }}">
+  <button type="submit">Supprimer</button>
+</form>

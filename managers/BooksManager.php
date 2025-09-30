@@ -26,7 +26,7 @@ class BooksManager extends AbstractManager
             $bookId = (int) $this->db->lastInsertId();
             $book->setId($bookId);
 
-            $gm = new GendersManager($this->db); // partage la transaction
+            $gm = new GendersManager($this->db);
 
             foreach ($book->getGenders() as $name) {
                 $gender   = $gm->findOrCreateByName($name);
@@ -135,4 +135,118 @@ class BooksManager extends AbstractManager
         }
         return $items;
     }
+
+    public function findOne(int $id): ?Book
+    {
+        $query = $this->db->prepare('SELECT * FROM books WHERE id = :id');
+        $query->execute(['id' => $id]);
+        $row = $query->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return null;
+
+        $qGenres = $this->db->prepare(
+            'SELECT g.gender
+            FROM genders g
+            JOIN books_genders bg ON bg.id_gender = g.id
+            WHERE bg.id_book = :id'
+        );
+        $qGenres->execute(['id' => $id]);
+        $genders = [];
+        while ($r = $qGenres->fetch(PDO::FETCH_ASSOC)) {
+            $genders[] = $r['gender'];
+        }
+
+        $book = new Book(
+            $row['title'],
+            $row['type'],
+            $row['description'],
+            $row['image'],
+            $row['chapter'] !== null ? (int)$row['chapter'] : null,
+            $genders
+        );
+        $book->setId((int)$row['id']);
+        return $book;
+    }
+
+    public function findOneByTitleExact(string $title): ?Book
+    {
+        $query = $this->db->prepare('SELECT * FROM books WHERE title = :t LIMIT 1');
+        $query->execute(['t' => $title]);
+        $row = $query->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return null;
+
+        $book = new Book(
+            $row['title'],
+            $row['type'],
+            $row['description'],
+            $row['image'],
+            $row['chapter'] !== null ? (int)$row['chapter'] : null
+        );
+        $book->setId((int)$row['id']);
+        return $book;
+    }
+    
+    public function update(Book $book): bool
+    {
+        try {
+            $this->db->beginTransaction();
+
+            $q = $this->db->prepare(
+                'UPDATE books
+                    SET title = :title,
+                        type = :type,
+                        description = :description,
+                        image = :image,
+                        chapter = :chapter
+                WHERE id = :id'
+            );
+            $ok = $q->execute([
+                'title'       => $book->getTitle(),
+                'type'        => $book->getType(),
+                'description' => $book->getDescription(),
+                'image'       => $book->getImage(),
+                'chapter'     => $book->getChapter(),
+                'id'          => $book->getId(),
+            ]);
+            if (!$ok) { $this->db->rollBack(); return false; }
+
+            $qd = $this->db->prepare('DELETE FROM books_genders WHERE id_book = :id');
+            $qd->execute(['id' => $book->getId()]);
+
+            $gm = new GendersManager($this->db);
+            foreach ($book->getGenders() as $name) {
+                $gender = $gm->findOrCreateByName($name);
+                $ql = $this->db->prepare(
+                    'INSERT INTO books_genders (id_book, id_gender) VALUES (:b, :g)'
+                );
+                $ql->execute(['b' => $book->getId(), 'g' => $gender->getId()]);
+            }
+
+            $this->db->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    public function deleteById(int $id): bool
+    {
+        try {
+            $this->db->beginTransaction();
+
+            // Nettoyer les dépendances (si pas de FK ON DELETE CASCADE)
+            $this->db->prepare('DELETE FROM books_genders WHERE id_book = :id')->execute(['id' => $id]);
+            $this->db->prepare('DELETE FROM scores        WHERE id_book = :id')->execute(['id' => $id]);
+            $this->db->prepare('DELETE FROM library       WHERE id_book = :id')->execute(['id' => $id]);
+
+            $ok = $this->db->prepare('DELETE FROM books WHERE id = :id')->execute(['id' => $id]);
+
+            $this->db->commit();
+            return (bool)$ok;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
 }
