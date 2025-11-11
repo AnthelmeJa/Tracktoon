@@ -1,6 +1,110 @@
-<h1>Accueil</h1>
-{% if logged %}
-  <p>Connecté ✔ — <a href="?route=logout">Se déconnecter</a></p>
-{% else %}
-  <p><a href="?route=login">Se connecter</a> | <a href="?route=register">S'inscrire</a></p>
-{% endif %}
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Accueil — Tracktoon{% endblock %}
+{% block meta_description %}Tracktoon : découvrez et suivez vos manhwas, manhuas et mangas en tendance, et recherchez des œuvres par titre, type, genre et chapitres.{% endblock %}
+
+{% block content %}
+  <main class="container margin " role="main">
+  
+  {# --- Recherche --- #}
+  <section class="home-search" role="search" aria-label="Recherche d’œuvres">
+    <form class="search-form" method="get" action="">
+      <input type="hidden" name="route" value="home">
+
+      {# Ligne principale : champ titre (très large) + bouton à droite #}
+      <div class="search-row">
+        <label class="u-visually-hidden" for="search-q">Titre</label>
+        <input
+          id="search-q"
+          class="search-input"
+          type="text"
+          name="q"
+          value="{{ filters.q }}"
+          placeholder="Recherche une œuvre..."
+          autocomplete="off">
+
+        <button type="submit" class="search-submit" aria-label="Lancer la recherche">Chercher</button>
+      </div>
+
+      {# Ligne secondaire : type + genre + min chapitres #}
+      <div class="search-filters">
+        <label class="filter-field">
+          <span class="filter-label">Type</span>
+          <select name="type">
+            <option value="" {{ filters.type == '' ? 'selected' : '' }}>(Aucun)</option>
+            <option value="manga"  {{ filters.type == 'manga'  ? 'selected' : '' }}>manga</option>
+            <option value="manhwa" {{ filters.type == 'manhwa' ? 'selected' : '' }}>manhwa</option>
+            <option value="manhua" {{ filters.type == 'manhua' ? 'selected' : '' }}>manhua</option>
+          </select>
+        </label>
+
+        <label class="filter-field">
+          <span class="filter-label">Genre exact</span>
+          <input type="text" name="genre" value="{{ filters.genre }}" placeholder="ex: action" autocomplete="off">
+        </label>
+
+        <label class="filter-field">
+          <span class="filter-label">Chapitres ≥</span>
+          <input type="number" name="min" min="1" value="{{ filters.min }}">
+        </label>
+      </div>
+    </form>
+  </section>
+
+  {# Détection d’une recherche #}
+  {% set has_filters = (filters.q or filters.type or filters.genre or (filters.min is not empty)) %}
+
+  {# --- Résultats (si recherche faite) --- #}
+  {% if has_filters %}
+    {% if results is defined and results|length > 0 %}
+      <section class="cards-section" aria-label="Résultats">
+        <h2>Résultats</h2>
+        <ul class="card-grid">
+          {% for b in results %}
+            {% set cover = b.image ?? '' %}
+            <li>
+              <article class="card">
+                <a class="card__link" href="?route=book&id={{ b.id }}">
+                  <figure class="card__media">
+                    <img
+                      src="{{ cover != '' ? cover : '/images/placeholder.png' }}"
+                      alt="Couverture de {{ b.title }}">
+                  </figure>
+                  <h3 class="card__title">{{ b.title }}</h3>
+                </a>
+              </article>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% else %}
+      <p role="status">Aucun résultat pour votre recherche.</p>
+    {% endif %}
+  {% else %}
+    {# --- Tendances (si aucune recherche) --- #}
+    <section class="cards-section" aria-label="Tendances">
+      <h2>Tendances</h2>
+      <ul class="card-grid">
+        {% for item in trending %}
+          {% set b = item.book %}
+          {% set cover = b.image ?? '' %}
+          <li>
+            <article class="card">
+              <a class="card__link" href="?route=book&id={{ b.id }}">
+                <figure class="card__media">
+                  <img
+                    src="{{ cover != '' ? cover : '/images/placeholder.png' }}"
+                    alt="Couverture de {{ b.title }}">
+                </figure>
+                <h3 class="card__title">{{ b.title }}</h3>
+              </a>
+            </article>
+          </li>
+        {% else %}
+          <li><p>Aucune œuvre pour le moment.</p></li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+</main>
+{% endblock %}

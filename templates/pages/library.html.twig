@@ -1,0 +1,129 @@
+{% extends 'layouts/base.html.twig' %}
+{% block title %}Ma bibliothèque — Tracktoon{% endblock %}
+
+{% block content %}
+
+{# Si le contrôleur ne fournit pas counts, on calcule depuis items #}
+{% if library_counts is defined %}
+  {% set counts = library_counts %}
+{% else %}
+  {% set a = 0 %}{% set e = 0 %}{% set t = 0 %}{% set fav = 0 %}
+  {% for it in items %}
+    {% if it.statut == 'a_lire' %}{% set a = a + 1 %}{% endif %}
+    {% if it.statut == 'en_cours' %}{% set e = e + 1 %}{% endif %}
+    {% if it.statut == 'termine' %}{% set t = t + 1 %}{% endif %}
+    {% if it.favori %}{% set fav = fav + 1 %}{% endif %}
+  {% endfor %}
+  {% set counts = { a_lire: a, en_cours: e, termine: t, favoris: fav } %}
+{% endif %}
+
+{# "Tout" = somme des statuts (Favoris est transversal) #}
+{% set total_all = counts.a_lire + counts.en_cours + counts.termine %}
+{% set f = active_filter|default('all') %}
+<main role="main">
+<div class="library">
+
+  {# ==== COLONNE GAUCHE : Ma bibliothèque / filtres ==== #}
+  {# On réutilise EXACTEMENT la même classe que book_user pour garder le style #}
+  <aside class="book-user__nav" aria-label="Filtres bibliothèque">
+    <h3>Ma bibliothèque</h3>
+    <ul class="nav-stats">
+      <li>
+        <a href="?route=library&filter=all" {{ f == 'all' ? 'aria-current="page"' }}>
+          <span>•</span> Tout <strong>{{ total_all }}</strong>
+        </a>
+      </li>
+      <li>
+        <a href="?route=library&filter=a_lire" {{ f == 'a_lire' ? 'aria-current="page"' }}>
+          <span>🔵</span> À lire <strong>{{ counts.a_lire }}</strong>
+        </a>
+      </li>
+      <li>
+        <a href="?route=library&filter=en_cours" {{ f == 'en_cours' ? 'aria-current="page"' }}>
+          <span>🟡</span> En cours <strong>{{ counts.en_cours }}</strong>
+        </a>
+      </li>
+      <li>
+        <a href="?route=library&filter=termine" {{ f == 'termine' ? 'aria-current="page"' }}>
+          <span>🟢</span> Terminé <strong>{{ counts.termine }}</strong>
+        </a>
+      </li>
+      <li>
+        <a href="?route=library&filter=favoris" {{ f == 'favoris' ? 'aria-current="page"' }}>
+          <span>❤️</span> Favoris <strong>{{ counts.favoris }}</strong>
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  {# ==== COLONNE DROITE : liste des œuvres (cards) ==== #}
+  <div class="library__main">
+    {% if error %}<p role="alert">{{ error }}</p>{% endif %}
+
+    {% if items is empty %}
+      <p>Aucune œuvre pour ce filtre.</p>
+    {% else %}
+      <section aria-label="Mes œuvres">
+        <ul class="lib-grid">
+          {% for it in items %}
+            {% set b = it.book %}
+            {% set g = b.genders ?? [] %}
+            {% set preview = g|slice(0,2) %}
+            {% set more = (g|length > 2) ? (g|length - 2) : 0 %}
+            {% set cover = b.image ?? '' %}
+
+            <li>
+              <article class="lib-card">
+                <a class="lib-card__link" href="?route=book&id={{ b.id }}&filter={{ f }}">
+                  <figure class="lib-card__media">
+                    {% set cover = b.image ?? '' %}
+                    <img
+                      src="{{ cover != '' ? cover : '/images/placeholder.png' }}"
+                      alt="Couverture de {{ b.title }}">
+                  </figure>
+
+                  <h3 class="lib-card__title">{{ b.title }}</h3>
+
+                  {% if b.author %}
+                    <p class="lib-card__author">{{ b.author }}</p>
+                  {% endif %}
+
+                  {# Genres : 2 premiers + +N #}
+                  {% set g = b.genders ?? [] %}
+                  {% set preview = g|slice(0,2) %}
+                  {% set more = (g|length > 2) ? (g|length - 2) : 0 %}
+                  {% if g and g|length > 0 %}
+                    <p class="lib-card__genres">
+                      {{ preview|join(', ') }}{% if more > 0 %} +{{ more }}{% endif %}
+                    </p>
+                  {% endif %}
+
+                  <div class="lib-card__meta">
+                    {# Badge d’état coloré #}
+                    {% set statut_humain = it.statut|replace({
+                      'a_lire':'À lire',
+                      'en_cours':'En cours',
+                      'termine':'Terminé'
+                    }) %}
+                    {% set statut_mod = it.statut == 'a_lire' ? 'a-lire'
+                      : (it.statut == 'en_cours' ? 'en-cours'
+                      : (it.statut == 'termine' ? 'termine' : '')) %}
+                    <span class="badge badge--{{ statut_mod }}">{{ statut_humain }}</span>
+
+                    <span class="lib-card__avg">★ {{ it.avg is not null ? it.avg ~ '/5' : '—' }}</span>
+
+                    {% if it.favori %}
+                      <span aria-label="Favori">★</span>
+                    {% endif %}
+                  </div>
+                </a>
+              </article>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
+  </div>
+</div>
+</main>
+{% endblock %}

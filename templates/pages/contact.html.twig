@@ -1,0 +1,93 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Contact — Tracktoon{% endblock %}
+{% block meta_description %}Contactez-nous pour toute question ou suggestion concernant Tracktoon.{% endblock %}
+
+{% block content %}
+<main role="main">
+
+  {# Messages d’état #}
+  {% if error %}<p role="alert" class="contact-alert">{{ error }}</p>{% endif %}
+  {% if success %}<p role="status" class="contact-status">{{ success }}</p>{% endif %}
+
+  {# Intro avec gradient gauche → droite #}
+  <section class="contact-intro" aria-label="Introduction">
+    <div class="container">
+      <h2>Contactez-nous</h2>
+      <p>Une question ? Une suggestion ? Nous sommes là pour vous aider à améliorer votre expérience Tracktoon.</p>
+    </div>
+  </section>
+
+  {# Zone principale : formulaire + FAQ à droite #}
+  <section class="contact-panel" aria-label="Contacter l’équipe">
+    <div class="container">
+      <div class="contact-grid">
+
+        {# FORMULAIRE #}
+        <div class="contact-form">
+          <h3>Envoyez-nous un message</h3>
+          <p>Remplissez le formulaire ci-dessous et nous vous répondrons rapidement.</p>
+
+          <form method="post" action="?route=contact-send" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            {# Honeypot anti-bot : champ à laisser vide #}
+            <div class="u-visually-hidden">
+              <label for="website">Votre site (laissez vide)</label>
+              <input id="website" type="text" name="website" tabindex="-1" autocomplete="off">
+            </div>
+
+            <label class="field">
+              <span class="field__label">Nom</span>
+              <input class="field__input" name="name" required value="{{ prefills.name|default('') }}" autocomplete="name">
+            </label>
+
+            <label class="field">
+              <span class="field__label">Email</span>
+              <input class="field__input" name="email" type="email" required value="{{ prefills.email|default('') }}" autocomplete="email">
+            </label>
+
+            <label class="field">
+              <span class="field__label">Message</span>
+              <textarea class="field__textarea" name="message" required placeholder="Écrivez ici...">{{ prefills.message|default('') }}</textarea>
+            </label>
+
+            {# Même style que le bouton du home (search-submit) #}
+            <button type="submit" class="search-submit" aria-label="Envoyer votre message">
+              <span aria-hidden="true">📨</span> Envoyer
+            </button>
+          </form>
+        </div>
+
+        {# ASIDE FAQ #}
+        <aside class="contact-aside" aria-label="Questions fréquentes">
+          <h3>Questions fréquentes</h3>
+
+          <div class="faq-list">
+            <article>
+              <h4>Comment ajouter une œuvre ?</h4>
+              <p>Si vous êtes connecté, vous pouvez ajouter une œuvre depuis sa page.</p>
+            </article>
+
+            <article>
+              <h4>Comment modifier mes notes ?</h4>
+              <p>Accédez à votre bibliothèque et ouvrez l’œuvre, puis utilisez l’espace « Notes privées ».</p>
+            </article>
+
+            <article>
+              <h4>Comment ajouter une œuvre qui n’est pas présente ?</h4>
+              <p>Faites une demande via le formulaire de contact. Un synopsis aide à accélérer l’ajout.</p>
+            </article>
+          </div>
+
+          <p>
+            <a class="btn-faq" href="?route=faq" aria-label="Consulter la FAQ">FAQ</a>
+          </p>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock %}

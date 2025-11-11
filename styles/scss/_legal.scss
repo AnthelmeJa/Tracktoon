@@ -1,0 +1,87 @@
+@use 'utils' as *;
+
+/* ===== LEGAL ===== */
+
+/* bandeau */
+.legal-hero {
+  background: linear-gradient(90deg, #DB5A23, #B8272C);
+  color: #fff;
+  padding: 3rem;
+
+  .container {
+    @include container;
+  }
+
+  h2 {
+    margin: 0 0 .6rem;
+    font-size: 2.2rem;
+  }
+
+  p {
+    margin: 0;
+    max-width: 60rem;
+  }
+
+  @include mobile {
+    padding: 3rem 1.5rem;
+  }
+}
+
+/* zone principale */
+.legal-body {
+  padding: 2.5rem 0 4rem;
+
+  .container {
+    @include container;
+  }
+
+  .legal-wrapper {
+    display: grid;
+    gap: 2rem;
+  }
+}
+
+/* blocs */
+.legal-block {
+  background: #FEF4EF;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .03);
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.9rem;
+  }
+
+  h4 {
+    margin-top: 1.2rem;
+    margin-bottom: .4rem;
+    font-size: 1.5rem;
+  }
+
+  p {
+    margin-bottom: .8rem;
+  }
+
+  ul {
+    margin: 0 0 1rem 1.4rem;
+    display: grid;
+    gap: .4rem;
+  }
+
+  address {
+    font-style: normal;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  a {
+    color: #DB5A23;
+    text-decoration: underline;
+  }
+
+  @include mobile {
+    padding: 1.5rem;
+  }
+}

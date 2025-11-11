@@ -50,4 +50,14 @@ class ScoresManager extends AbstractManager
 
         return null;
     }
+
+    public function getUserScore(int $userId, int $bookId): ?int
+    {
+        $query = $this->db->prepare(
+            'SELECT score FROM scores WHERE id_user = :u AND id_book = :b LIMIT 1'
+        );
+        $query->execute(['u' => $userId, 'b' => $bookId]);
+        $row = $query->fetch(PDO::FETCH_ASSOC);
+        return $row ? (int)$row['score'] : null;
+    }
 }

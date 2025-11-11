@@ -24,3 +24,6 @@ require_once __DIR__ . '/../services/Routeur.php';
 // CONTROLLERS
 require_once __DIR__ . '/../controllers/UsersController.php';
 require_once __DIR__ . '/../controllers/AdminController.php';
+require_once __DIR__ . '/../controllers/HomeController.php';
+require_once __DIR__ . '/../controllers/LibraryController.php';
+require_once __DIR__ . '/../controllers/BookController.php';

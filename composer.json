@@ -1,6 +1,7 @@
 {
     "require": {
         "vlucas/phpdotenv": "^5.6",
-        "twig/twig": "3.10"
+        "twig/twig": "3.10",
+        "phpmailer/phpmailer": "^7.0"
     }
 }

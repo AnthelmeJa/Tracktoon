@@ -120,4 +120,35 @@ class LibraryManager extends AbstractManager
         }
         return $ids;
     }
+
+    public function getCounts(int $userId): array
+    {
+        $base = ['a_lire' => 0, 'en_cours' => 0, 'termine' => 0, 'favoris' => 0];
+
+        $q1 = $this->db->prepare(
+            'SELECT statut, COUNT(*) AS c
+             FROM library
+             WHERE id_user = :u
+             GROUP BY statut'
+        );
+        $q1->execute(['u' => $userId]);
+        while ($row = $q1->fetch(PDO::FETCH_ASSOC)) {
+            $s = $row['statut'];
+            $c = (int)$row['c'];
+            if (isset($base[$s])) {
+                $base[$s] = $c;
+            }
+        }
+
+        $q2 = $this->db->prepare(
+            'SELECT COUNT(*) AS cfav
+             FROM library
+             WHERE id_user = :u AND favori = 1'
+        );
+        $q2->execute(['u' => $userId]);
+        $r2 = $q2->fetch(PDO::FETCH_ASSOC);
+        $base['favoris'] = $r2 ? (int)$r2['cfav'] : 0;
+
+        return $base;
+    }
 }

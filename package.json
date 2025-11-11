@@ -1,5 +1,16 @@
 {
+  "name": "tracktoon",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "license": "UNLICENSED",
   "devDependencies": {
     "sass": "^1.90.0"
+  },
+  
+  "scripts": {
+    "sass:watch": "sass styles/scss/main.scss styles/css/main.css --style=expanded --watch",
+    "sass:build": "sass styles/scss/main.scss styles/css/main.css --no-source-map --style=compressed"
   }
 }

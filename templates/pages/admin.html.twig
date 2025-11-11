@@ -1,119 +1,280 @@
-<h1>Espace admin</h1>
+{% extends 'layouts/base.html.twig' %}
 
-{% if error %}<p style="color:red">{{ error }}</p>{% endif %}
-{% if success %}<p style="color:green">{{ success }}</p>{% endif %}
+{% block title %}Administration — Tracktoon{% endblock %}
+{% block meta_description %}Espace administrateur : gestion des utilisateurs et des œuvres.{% endblock %}
 
-<h2>1) Ajouter un book</h2>
-<form method="post" action="?route=admin-add-book">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>Titre</label><input name="title" required>
-  <label>Type</label>
-  <select name="type" required>
-    <option value="manga">manga</option>
-    <option value="manhwa">manhwa</option>
-    <option value="manhua">manhua</option>
-  </select>
-  <label>Description</label><textarea name="description" required></textarea>
-  <label>Image (URL)</label><input name="image">
-  <label>Chapitre (num)</label><input name="chapter" type="number" min="1">
-  <label>Genres (séparés par des virgules)</label><input name="genders" placeholder="action,drama">
-  <button type="submit">Ajouter</button>
-</form>
+{% block content %}
+<main role="main">
 
-<hr>
+  {# Bandeau #}
+  <section class="admin-hero" aria-label="Espace administrateur">
+    <div class="container">
+      <h2>Administration</h2>
+      <p>Gérez les utilisateurs et les œuvres de Tracktoon.</p>
+    </div>
+  </section>
 
-<h2>2) Mettre à jour un utilisateur</h2>
-<form method="post" action="?route=admin-update-user">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>ID utilisateur</label><input name="id" type="number" required>
-  <label>Pseudo</label><input name="pseudo">
-  <label>Email</label><input name="mail" type="email">
-  <label>Rôle</label>
-  <select name="role">
-    <option>user</option><option>admin</option><option>super_admin</option>
-  </select>
-  <label>Nouveau mot de passe (optionnel)</label>
-  <input name="password" type="password" autocomplete="new-password">
-  <button type="submit">Mettre à jour</button>
-</form>
+  {# Messages globaux #}
+  <section class="admin-messages container" aria-live="polite">
+    {% if error %}
+      <p class="admin-alert admin-alert--error">{{ error }}</p>
+    {% endif %}
+    {% if success %}
+      <p class="admin-alert admin-alert--success">{{ success }}</p>
+    {% endif %}
+  </section>
 
-<hr>
+  {# Grille des blocs admin #}
+  <section class="admin-section">
+    <div class="container">
+      <div class="admin-grid">
 
-<h2>3) Supprimer un utilisateur</h2>
-<form method="post" action="?route=admin-delete-user" onsubmit="return confirm('Supprimer cet utilisateur ?');">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>ID utilisateur</label><input name="id" type="number" required>
-  <button type="submit">Supprimer</button>
-</form>
+        {# 1) Ajouter un book #}
+        <article class="admin-card" aria-label="Ajouter un book">
+          <h3>1) Ajouter une œuvre</h3>
+          <p>Créer un nouveau manga/manhwa/manhua.</p>
 
-<hr>
+          <form class="admin-form" method="post" action="?route=admin-add-book">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
-<h2>4) Trouver un utilisateur par email</h2>
-<form method="post" action="?route=admin-find-user">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>Email</label><input name="mail" type="email" required>
-  <button type="submit">Chercher</button>
-</form>
+            <label class="admin-field">
+              <span>Titre</span>
+              <input name="title" required>
+            </label>
 
-{% if found_user %}
-  <h3>Résultat</h3>
-  <ul>
-    <li>ID: {{ found_user.id }}</li>
-    <li>Pseudo: {{ found_user.pseudo }}</li>
-    <li>Email: {{ found_user.mail }}</li>
-    <li>Rôle: {{ found_user.role }}</li>
-  </ul>
-{% endif %}
+            <label class="admin-field">
+              <span>Type</span>
+              <select name="type" required>
+                <option value="manga">manga</option>
+                <option value="manhwa">manhwa</option>
+                <option value="manhua">manhua</option>
+              </select>
+            </label>
 
-<hr>
+            <label class="admin-field">
+              <span>Description</span>
+              <textarea name="description" required></textarea>
+            </label>
 
-<h2>4b) Trouver un livre par titre (exact)</h2>
-<form method="post" action="?route=admin-find-book">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>Titre exact</label>
-  <input name="title" required>
-  <button type="submit">Chercher</button>
-</form>
+            <label class="admin-field">
+              <span>Image (URL)</span>
+              <input name="image" placeholder="/images/cover.png ou https://...">
+            </label>
 
-{% if found_book %}
-  <h3>Résultat livre</h3>
-  <ul>
-    <li>ID: {{ found_book.id }}</li>
-    <li>Titre: {{ found_book.title }}</li>
-    <li>Type: {{ found_book.type }}</li>
-    <li>Chapitre: {{ found_book.chapter ?? '—' }}</li>
-    <li>Genres: {{ found_book.genders|join(', ') }}</li>
-  </ul>
-{% endif %}
+            <label class="admin-field">
+              <span>Chapitre (num)</span>
+              <input name="chapter" type="number" min="1">
+            </label>
 
-<hr>
+            <label class="admin-field">
+              <span>Genres (séparés par des virgules)</span>
+              <input name="genders" placeholder="action,drama">
+            </label>
 
-<h2>5) Mettre à jour un livre</h2>
-<form method="post" action="?route=admin-update-book">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>ID livre</label>
-  <input name="id" type="number" required value="{{ found_book.id is defined ? found_book.id : '' }}">
-  <label>Titre</label><input name="title" placeholder="(laisser vide pour ne pas changer)">
-  <label>Type</label>
-  <select name="type">
-    <option value="">(inchangé)</option>
-    <option value="manga">manga</option>
-    <option value="manhua">manhua</option>
-    <option value="manhwa">manhwa</option>
-  </select>
-  <label>Description</label><textarea name="description" placeholder="(inchangé)"></textarea>
-  <label>Image (URL)</label><input name="image" placeholder="(inchangé)">
-  <label>Chapitre (num)</label><input name="chapter" type="number" min="1" placeholder="(inchangé)">
-  <label>Genres (virgules) — vide = inchangé</label><input name="genders" placeholder="action,drama">
-  <button type="submit">Mettre à jour</button>
-</form>
+            <label class="admin-field">
+              <span>Auteur</span>
+              <input name="author" placeholder="ex: Naoki Urasawa" required>
+            </label>
 
-<hr>
+            <button type="submit" class="btn-orange">Ajouter</button>
+          </form>
+        </article>
 
-<h2>6) Supprimer un livre</h2>
-<form method="post" action="?route=admin-delete-book" onsubmit="return confirm('Supprimer ce livre ?');">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>ID livre</label>
-  <input name="id" type="number" required value="{{ found_book.id is defined ? found_book.id : '' }}">
-  <button type="submit">Supprimer</button>
-</form>
+        {# 2) Mettre à jour un utilisateur #}
+        <article class="admin-card" aria-label="Mettre à jour un utilisateur">
+          <h3>2) Mettre à jour un utilisateur</h3>
+          <p>Modifier pseudo, email, rôle ou mot de passe.</p>
+
+          <form class="admin-form" method="post" action="?route=admin-update-user">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <label class="admin-field">
+              <span>ID utilisateur</span>
+              <input name="id" type="number" required>
+            </label>
+
+            <label class="admin-field">
+              <span>Pseudo</span>
+              <input name="pseudo">
+            </label>
+
+            <label class="admin-field">
+              <span>Email</span>
+              <input name="mail" type="email">
+            </label>
+
+            <label class="admin-field">
+              <span>Rôle</span>
+              <select name="role">
+                <option>user</option>
+                <option>admin</option>
+                <option>super_admin</option>
+              </select>
+            </label>
+
+            <label class="admin-field">
+              <span>Nouveau mot de passe (optionnel)</span>
+              <input name="password" type="password" autocomplete="new-password">
+            </label>
+
+            <button type="submit" class="btn-orange">Mettre à jour</button>
+          </form>
+        </article>
+
+        {# 3) Supprimer un utilisateur #}
+        <article class="admin-card" aria-label="Supprimer un utilisateur">
+          <h3>3) Supprimer un utilisateur</h3>
+          <p>Action irréversible.</p>
+
+          <form class="admin-form" method="post" action="?route=admin-delete-user" onsubmit="return confirm('Supprimer cet utilisateur ?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <label class="admin-field">
+              <span>ID utilisateur</span>
+              <input name="id" type="number" required>
+            </label>
+
+            <button type="submit" class="btn-danger">Supprimer</button>
+          </form>
+        </article>
+
+        {# 4) Trouver un utilisateur par email #}
+        <article class="admin-card" aria-label="Trouver un utilisateur">
+          <h3>4) Trouver un utilisateur</h3>
+          <p>Rechercher via son adresse e-mail.</p>
+
+          <form class="admin-form" method="post" action="?route=admin-find-user">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <label class="admin-field">
+              <span>Email</span>
+              <input name="mail" type="email" required>
+            </label>
+
+            <button type="submit" class="btn-orange">Chercher</button>
+          </form>
+
+          {% if found_user %}
+            <div class="admin-result">
+              <h4>Résultat</h4>
+              <ul>
+                <li><strong>ID :</strong> {{ found_user.id }}</li>
+                <li><strong>Pseudo :</strong> {{ found_user.pseudo }}</li>
+                <li><strong>Email :</strong> {{ found_user.mail }}</li>
+                <li><strong>Rôle :</strong> {{ found_user.role }}</li>
+              </ul>
+            </div>
+          {% endif %}
+        </article>
+
+        {# 4b) Trouver un livre #}
+        <article class="admin-card" aria-label="Trouver un livre">
+          <h3>4b) Trouver un livre</h3>
+          <p>Recherche par titre exact.</p>
+
+          <form class="admin-form" method="post" action="?route=admin-find-book">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <label class="admin-field">
+              <span>Titre exact</span>
+              <input name="title" required>
+            </label>
+
+            <button type="submit" class="btn-orange">Chercher</button>
+          </form>
+
+          {% if found_book %}
+            <div class="admin-result">
+              <h4>Résultat livre</h4>
+              <ul>
+                <li><strong>ID :</strong> {{ found_book.id }}</li>
+                <li><strong>Titre :</strong> {{ found_book.title }}</li>
+                <li><strong>Type :</strong> {{ found_book.type }}</li>
+                <li><strong>Chapitres :</strong> {{ found_book.chapter ?? '—' }}</li>
+                <li><strong>Genres :</strong> {{ found_book.genders|join(', ') }}</li>
+                <li><strong>Auteur :</strong> {{ found_book.author }}</li>
+              </ul>
+            </div>
+          {% endif %}
+        </article>
+
+        {# 5) Mettre à jour un livre #}
+        <article class="admin-card" aria-label="Mettre à jour un livre">
+          <h3>5) Mettre à jour un livre</h3>
+          <p>Laisser vide = inchangé.</p>
+
+          <form class="admin-form" method="post" action="?route=admin-update-book">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <label class="admin-field">
+              <span>ID livre</span>
+              <input name="id" type="number" required value="{{ found_book.id is defined ? found_book.id : '' }}">
+            </label>
+
+            <label class="admin-field">
+              <span>Titre</span>
+              <input name="title" placeholder="(inchangé)">
+            </label>
+
+            <label class="admin-field">
+              <span>Type</span>
+              <select name="type">
+                <option value="">(inchangé)</option>
+                <option value="manga">manga</option>
+                <option value="manhua">manhua</option>
+                <option value="manhwa">manhwa</option>
+              </select>
+            </label>
+
+            <label class="admin-field">
+              <span>Description</span>
+              <textarea name="description" placeholder="(inchangé)"></textarea>
+            </label>
+
+            <label class="admin-field">
+              <span>Image (URL)</span>
+              <input name="image" placeholder="(inchangé)">
+            </label>
+
+            <label class="admin-field">
+              <span>Chapitre (num)</span>
+              <input name="chapter" type="number" min="1" placeholder="(inchangé)">
+            </label>
+
+            <label class="admin-field">
+              <span>Genres (virgules)</span>
+              <input name="genders" placeholder="action,drama">
+            </label>
+
+            <label class="admin-field">
+              <span>Auteur</span>
+              <input name="author" placeholder="ex: Naoki Urasawa">
+            </label>
+
+            <button type="submit" class="btn-orange">Mettre à jour</button>
+          </form>
+        </article>
+
+        {# 6) Supprimer un livre #}
+        <article class="admin-card" aria-label="Supprimer un livre">
+          <h3>6) Supprimer un livre</h3>
+          <p>Action irréversible.</p>
+
+          <form class="admin-form" method="post" action="?route=admin-delete-book" onsubmit="return confirm('Supprimer ce livre ?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <label class="admin-field">
+              <span>ID livre</span>
+              <input name="id" type="number" required value="{{ found_book.id is defined ? found_book.id : '' }}">
+            </label>
+
+            <button type="submit" class="btn-danger">Supprimer</button>
+          </form>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock %}

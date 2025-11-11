@@ -1,0 +1,184 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}{{ book.title }} — Ma fiche{% endblock %}
+{% block meta_description %}Gérez votre statut, favoris, note et notes privées pour « {{ book.title }} ».{% endblock %}
+
+{% block content %}
+
+{# Données utiles #}
+{% set cover = book.image ?? '' %}
+{% set hero_cover = (cover != '' ? cover : '/images/placeholder.png') %}
+
+{# Compteurs : si non fournis, défaut à 0. "Tout" = somme demandée (attention, Favoris recoupe les statuts). #}
+{% set counts = library_counts is defined ? library_counts : { a_lire:0, en_cours:0, termine:0, favoris:0 } %}
+{% set total_all = counts.a_lire + counts.en_cours + counts.termine %}
+{% set f = active_filter|default('all') %}
+<main role="main">
+<div class="book-user">
+
+  {# ==== COLONNE GAUCHE : Ma bibliothèque / filtres ==== #}
+  <aside class="book-user__nav" aria-label="Filtres bibliothèque">
+    <h3>Ma bibliothèque</h3>
+    <ul class="nav-stats">
+      <li>
+        <a href="?route=library&filter=all" {{ f == 'all' ? 'aria-current="page"' }}>
+          <span>•</span> Tout <strong>{{ total_all }}</strong>
+        </a>
+      </li>
+      <li>
+        <a href="?route=library&filter=a_lire" {{ f == 'a_lire' ? 'aria-current="page"' }}>
+          <span>🔵</span> À lire <strong>{{ counts.a_lire }}</strong>
+        </a>
+      </li>
+      <li>
+        <a href="?route=library&filter=en_cours" {{ f == 'en_cours' ? 'aria-current="page"' }}>
+          <span>🟡</span> En cours <strong>{{ counts.en_cours }}</strong>
+        </a>
+      </li>
+      <li>
+        <a href="?route=library&filter=termine" {{ f == 'termine' ? 'aria-current="page"' }}>
+          <span>🟢</span> Terminé <strong>{{ counts.termine }}</strong>
+        </a>
+      </li>
+      <li>
+        <a href="?route=library&filter=favoris" {{ f == 'favoris' ? 'aria-current="page"' }}>
+          <span>❤️</span> Favoris <strong>{{ counts.favoris }}</strong>
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  {# ==== COLONNE DROITE : contenu fiche œuvre ==== #}
+  <div class="book-user__main">
+
+    {% if error %}<p role="alert">{{ error }}</p>{% endif %}
+    {% if success %}<p role="status">{{ success }}</p>{% endif %}
+
+    {# --- HERO / BANDEAU (comme book.html.twig mais dans la colonne droite) --- #}
+    <section class="book-hero book-hero--user" style="--cover: url('{{ hero_cover|e('html_attr') }}')">
+      <div class="book-hero__inner">
+        <figure class="book-hero__media">
+          <img src="{{ cover != '' ? cover : '/images/placeholder.png' }}"
+               alt="Couverture de {{ book.title }}">
+        </figure>
+
+        <div class="book-hero__meta">
+          <h2 class="book-hero__title">{{ book.title }}</h2>
+
+          {% if book.author %}
+            <p class="book-hero__author">par {{ book.author }}</p>
+          {% endif %}
+
+          <div class="book-hero__tags">
+            <span class="pill pill--light">
+              {{ book.chapter is not null ? (book.chapter ~ ' chapitres') : 'Chapitres : —' }}
+            </span>
+
+            {% if book.genders and book.genders|length > 0 %}
+              {% for g in book.genders %}
+                <span class="pill pill--light">{{ g }}</span>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {# --- BARRE OUTILS : à gauche statut/favori, à droite note modifiable --- #}
+    {% if entry %}
+      <section class="book-tools" aria-label="Réglages personnels">
+        <div class="book-tools__left">
+          <form class="book-tools__form" method="post" action="?route=library-save">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="book_id" value="{{ book.id }}">
+
+            <label class="u-visually-hidden" for="statut">Statut</label>
+            <select id="statut" name="statut" required class="bt-input">
+              <option value="a_lire"   {{ entry.statut == 'a_lire'   ? 'selected' }}>À lire</option>
+              <option value="en_cours" {{ entry.statut == 'en_cours' ? 'selected' }}>En cours</option>
+              <option value="termine"  {{ entry.statut == 'termine'  ? 'selected' }}>Terminé</option>
+            </select>
+
+            <label class="checkbox-inline bt-check">
+              <input type="checkbox" name="favori" value="1" {{ entry.favori ? 'checked' }}>
+              Favori
+            </label>
+
+            {# bouton laissé pour fallback si JS off #}
+            <button type="submit" class="btn-save-light">Enregistrer</button>
+          </form>
+        </div>
+
+        <div class="book-tools__right">
+          <form class="js-rate-form" method="post" action="?route=book-rate">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="book_id" value="{{ book.id }}">
+            <input type="hidden" name="score" value="{{ my_score is defined ? my_score : '' }}">
+
+            <fieldset class="stars-fieldset">
+              <legend class="u-visually-hidden">Votre note</legend>
+              {% for n in 1..5 %}
+                <button
+                  type="button"
+                  class="star-btn {{ (my_score is defined and my_score >= n) ? 'is-filled' }}"
+                  data-score="{{ n }}"
+                >
+                  ★
+                  <span class="u-visually-hidden">{{ n }} sur 5</span>
+                </button>
+              {% endfor %}
+            </fieldset>
+
+            <p class="star-feedback" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+    {% endif %}
+
+    {# --- SYNOPSIS --- #}
+    <section class="book-synopsis">
+      <h3>Synopsis</h3>
+      <p>{{ book.description }}</p>
+    </section>
+
+    {# --- NOTES PRIVÉES (textarea sans label visible + placeholder) --- #}
+    {% if entry %}
+      <section class="book-notes" aria-label="Notes privées">
+        <h3>Notes privées</h3>
+        <p>Gardez une trace de votre progression, de vos pensées ou de vos rappels sur cette œuvre.</p>
+
+        <form method="post" action="?route=library-save">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="book_id" value="{{ book.id }}">
+          {# On n’envoie ici que le commentaire ; le backend garde statut/favori inchangés #}
+          <label class="u-visually-hidden" for="comment">Commentaire</label>
+          <textarea id="comment" name="comment" rows="6" placeholder="Écrivez ici...">{{ entry.comment }}</textarea>
+
+          <button type="submit" class="btn-save-orange">Enregistrer les notes</button>
+        </form>
+      </section>
+
+      {# Retirer de la bibliothèque #}
+      <section class="book-remove">
+        <form method="post" action="?route=library-remove"
+              onsubmit="return confirm('Retirer cette œuvre de votre bibliothèque ?');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="book_id" value="{{ book.id }}">
+          <input type="hidden" name="filter" value="{{ active_filter|default('all') }}">
+          <button type="submit" class="btn-remove">Retirer de ma bibliothèque</button>
+        </form>
+      </section>
+    {% else %}
+      <section aria-label="Ajouter à ma bibliothèque">
+        <form method="post" action="?route=library-add">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="book_id" value="{{ book.id }}">
+          <button type="submit" class="btn-save-orange">Ajouter à ma bibliothèque</button>
+        </form>
+      </section>
+    {% endif %}
+
+  </div>
+</div>
+</main>
+{% endblock %}

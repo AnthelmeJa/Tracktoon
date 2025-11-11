@@ -1,0 +1,158 @@
+@use 'utils' as *;
+
+/* ===== ADMIN ===== */
+
+/* bandeau */
+.admin-hero {
+  background: linear-gradient(90deg, #DB5A23, #B8272C);
+  color: #fff;
+  padding: 3rem;
+
+  .container {
+    @include container;
+  }
+
+  h2 {
+    margin: 0 0 .6rem;
+    font-size: 2.2rem;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  @include mobile {
+    padding: 3rem 1.5rem;
+  }
+}
+
+/* messages globaux */
+.admin-messages {
+  @include container;
+  margin-top: 1.5rem;
+
+  .admin-alert {
+    padding: .9rem 1.2rem;
+    border-radius: .8rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+
+    &--error {
+      background: #ffe6e6;
+      color: #9a1f1f;
+      border: 1px solid #f5bcbc;
+    }
+    &--success {
+      background: #e8f5e9;
+      color: #1b5e20;
+      border: 1px solid #c8e6c9;
+    }
+  }
+}
+
+/* zone avec les cartes */
+.admin-section {
+  padding: 2.5rem 0 4rem;
+
+  .container {
+    @include container;
+  }
+
+  .admin-grid {
+    display: grid;
+    gap: 1.8rem;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 980px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+/* carte admin générique */
+.admin-card {
+  background: #FEF4EF;
+  border-radius: 1rem;
+  padding: 1.8rem 1.8rem 2rem;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .03);
+
+  h3 {
+    margin: 0 0 .4rem;
+  }
+
+  p {
+    margin: 0 0 1.1rem;
+  }
+
+  @include mobile {
+    padding: 1.5rem;
+  }
+}
+
+/* formulaires dans les cartes */
+.admin-form {
+  display: grid;
+  gap: 1rem;
+
+  .admin-field {
+    display: grid;
+    gap: .4rem;
+
+    span {
+      font-size: 1.4rem;
+    }
+
+    input,
+    select,
+    textarea {
+      padding: .9rem 1.1rem;
+      border-radius: .8rem;
+      border: 1px solid #D8D8D8;
+      background: #fff;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 8rem;
+      resize: vertical;
+    }
+  }
+}
+
+/* boutons */
+.btn-orange {
+  display: inline-block;
+  padding: 1rem 1.4rem;
+  border-radius: 1rem;
+  border: 1px solid #FF6900;
+  background: #FF6900;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-danger {
+  display: inline-block;
+  padding: 1rem 1.4rem;
+  border-radius: 1rem;
+  border: 1px solid #c62828;
+  background: #fff;
+  color: #c62828;
+  cursor: pointer;
+}
+
+/* résultats des recherches */
+.admin-result {
+  margin-top: 1rem;
+  background: #fff;
+  border-radius: .7rem;
+  padding: .9rem 1rem;
+
+  h4 {
+    margin: 0 0 .4rem;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.5rem;
+  }
+}

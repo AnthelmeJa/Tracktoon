@@ -1,0 +1,238 @@
+@use 'utils' as *;
+
+/* ===== PAGE LIBRARY ===== */
+
+.library {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  align-items: stretch;
+  column-gap: 0;
+
+  background: linear-gradient(rgba(0, 0, 0, 0.205), rgba(0, 0, 0, 0.205)) 260px 0 / 1px 100% no-repeat;
+}
+
+.library__main {
+  min-width: 0;
+  padding-bottom: 3rem;
+}
+
+/* ===== NAV gauche (on reprend tes classes) ===== */
+.book-user__nav {
+  padding: 2.5rem 1.5rem 2rem;
+
+  h3 {
+    margin: 0 0 1.2rem;
+    font-size: 1.6rem;
+  }
+
+  .nav-stats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: .6rem;
+
+    a {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      text-decoration: none;
+      color: inherit;
+      border-radius: .6rem;
+      padding: .5rem .6rem;
+      transition: background .15s ease;
+
+      span:first-child {
+        width: 1.6rem;
+        text-align: center;
+      }
+
+      strong {
+        margin-left: auto;
+      }
+
+      &[aria-current="page"] {
+        background: rgba(255, 106, 0, .12);
+        color: #000;
+      }
+    }
+  }
+}
+
+/* ===== Grille des cards ===== */
+.lib-grid {
+  list-style: none;
+  margin: 3rem 0 0 3rem;
+  padding: 0;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.6rem;
+}
+
+.lib-card {
+  border: 1px solid #000;
+  border-radius: .8rem;
+  background: transparent;
+
+  &__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    padding: .8rem;
+  }
+
+  &__media {
+    margin: 0 0 .8rem;
+    overflow: hidden;
+    border-radius: .6rem;
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  &__title {
+    margin: 0 0 .4rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  &__author {
+    margin: 0 0 .6rem;
+    color: #333;
+    font-size: 1.4rem;
+  }
+
+  &__genres {
+    margin: 0 0 .6rem;
+    color: #555;
+    font-size: 1.3rem;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    flex-wrap: wrap;
+  }
+
+  &__avg {
+    font-size: 1.3rem;
+    color: #444;
+  }
+}
+
+/* badges d’état */
+.badge {
+  display: inline-block;
+  padding: .3rem .8rem;
+  border-radius: 999rem;
+  border: 1px solid currentColor;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.badge--a-lire {
+  background: #006EFF;
+  border-color: #006EFF;
+  color: #fff;
+}
+.badge--en-cours {
+  background: #FFF8A7;
+  border-color: #FFF8A7;
+  color: #111;
+}
+.badge--termine {
+  background: #22B754;
+  border-color: #22B754;
+  color: #fff;
+}
+
+body.theme-dark .book-user__nav .nav-stats a[aria-current="page"],
+body.theme-dark .library .book-user__nav .nav-stats a[aria-current="page"] {
+  background: white;
+  color: rgb(0, 0, 0);                          
+  border-color: rgba(255,106,0,.35);
+}
+
+
+
+body.theme-dark .lib-card {
+  border-color: rgba(255,255,255,.12);
+}
+
+body.theme-dark .lib-card,
+body.theme-dark .lib-card__title,
+body.theme-dark .lib-card__author,
+body.theme-dark .lib-card__genres,
+body.theme-dark .lib-card__avg {
+  color: #fff;
+}
+
+body.theme-dark .lib-card {
+  background: rgba(38,38,38,.6);
+}
+
+/* ====== MOBILE ====== */
+@include mobile {
+  .library {
+    grid-template-columns: 1fr;
+    background: none;
+    overflow-x: hidden;
+  }
+
+  .book-user__nav {
+    border-bottom: 1px solid rgba(0,0,0,.205);
+    margin-bottom: 1rem;
+    text-align: center;
+    overflow: hidden;
+
+    h3 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .nav-stats {
+      display: flex;
+      gap: .6rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
+      overscroll-behavior: contain;
+      max-width: 100%;
+      padding-bottom: .4rem; 
+    }
+
+    .nav-stats a {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 2rem;
+      padding: .6rem .9rem;
+      background: rgba(0,0,0,.08);
+      border: 1px solid rgba(0,0,0,.08);
+      border-radius: .7rem;
+      text-decoration: none;
+      color: inherit;
+      scroll-snap-align: start;
+      max-width: 90vw;
+    }
+
+    .nav-stats a[aria-current="page"] {
+      background: rgba(255,106,0,.12);
+      border-color: rgba(255,106,0,.3);
+    }
+  }
+
+  .lib-grid {
+    margin: 2rem 0 0;
+    padding-inline: 1rem;
+  }
+}

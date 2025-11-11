@@ -9,6 +9,7 @@ class Book
     private ?string $image = null;
     private ?int $chapter = null;
     private array $genders = [];
+    private string $author;
 
     public function __construct(
         string $title,
@@ -16,13 +17,15 @@ class Book
         string $description,
         ?string $image = null,
         ?int $chapter = null,
-        array $genders = []
+        array $genders = [],
+        string $author = 'Inconnu'
     ) {
         $this->setTitle($title);
         $this->setType($type);
         $this->setDescription($description);
         $this->setImage($image);
         $this->setChapter($chapter);
+        $this->setAuthor($author);
 
         foreach ($genders as $gender) {
             $this->addGender($gender);
@@ -65,6 +68,10 @@ class Book
         return $this->genders;
     }
 
+    public function getAuthor(): string
+    {
+        return $this->author;
+    }
 
     public function setId(int $id): void
     {
@@ -117,5 +124,11 @@ class Book
         if (!in_array($gender, $this->genders, true)) {
             $this->genders[] = $gender;
         }
+    }
+
+    public function setAuthor(string $author): void {
+        $a = trim($author);
+        if ($a === '') throw new InvalidArgumentException("L’auteur est obligatoire.");
+        $this->author = $a;
     }
 }

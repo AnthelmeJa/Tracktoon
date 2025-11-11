@@ -1,0 +1,134 @@
+@use 'utils' as *;
+
+/* ===== CONTACT ===== */
+
+/* Bandeau d’intro */
+.contact-intro {
+  background: linear-gradient(90deg, #DB5A23, #B8272C);
+  color: #fff;
+  padding: 3rem;
+
+  h2 {
+    margin: 0 0 .6rem;
+  }
+
+  p {
+    margin: 0;
+  }
+
+}
+
+/* Bloc principal */
+.contact-panel {
+  padding: 5rem; 
+  color: #000;
+
+  .contact-grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+
+    @media (min-width: 960px) {
+      grid-template-columns: 2fr 1fr;
+      align-items: flex-start;
+    }
+  }
+
+  /* carte formulaire */
+  .contact-form {
+    background: #FEF4EF;
+    border-radius: 1rem;
+    padding: 2rem;
+
+    h3 {
+      margin: 0 0 .6rem;
+    }
+
+    p {
+      margin: 0 0 1.2rem;
+    }
+  }
+
+  /* champs */
+  .field {
+    display: grid;
+    gap: .5rem;
+    margin-bottom: 1rem;
+
+    &__label {
+      font-size: 1.4rem;
+    }
+
+    &__input,
+    &__textarea {
+      width: 100%;
+      padding: 1rem 1.2rem;
+      border-radius: 1rem;
+      border: 1px solid #D8D8D8;
+      background: #fff;
+      font: inherit;
+    }
+
+    &__textarea {
+      min-height: 12rem;
+      resize: vertical;
+    }
+  }
+
+  /* aside à droite */
+  .contact-aside {
+    background: linear-gradient(180deg, #DB5A23, #B8272C);
+    color: #fff;
+    border-radius: 1rem;
+    padding: 2rem;
+
+    h3 {
+      margin: 0 0 1rem;
+    }
+
+    .faq-list {
+      display: grid;
+      gap: 1rem;
+      margin: 0 0 1.2rem;
+
+      h4 {
+        margin: 0 0 .25rem;
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+
+    .btn-faq {
+      display: inline-block;
+      padding: .9rem 1.4rem;
+      border-radius: 1rem;
+      border: 1px solid #fff;
+      color: #fff;
+      text-decoration: none;
+      background: transparent;
+    }
+  }
+
+  /* messages d’état */
+  .contact-alert {
+    color: #B00020;
+    margin: 1rem 0;
+  }
+
+  .contact-status {
+    color: #0B7A0B;
+    margin: 1rem 0;
+  }
+
+  /* mobile */
+  @include mobile {
+    padding: 3rem 1rem;
+
+    .contact-form,
+    .contact-aside {
+      padding: 1.5rem;
+    }
+  }
+}

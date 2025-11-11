@@ -1,0 +1,74 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}{{ book.title }} — Tracktoon{% endblock %}
+{% block meta_description %}Fiche de {{ book.title }} : type {{ book.type }}, chapitres {{ book.chapter ?? '—' }}.{% endblock %}
+
+{% block content %}
+
+  {# Prépare l’URL de couverture pour le fond bannière #}
+  {% set cover = book.image ?? '' %}
+  {% set hero_cover = (cover != '' ? cover : '/images/placeholder.png') %}
+
+  {# === HERO / BANDEAU === #}
+    <main role="main">
+      <section class="book-hero" style="--cover: url('{{ hero_cover|e('html_attr') }}')">
+        <div class="book-hero__inner container">
+
+        <figure class="book-hero__media">
+          <img
+            src="{{ cover != '' ? cover : '/images/placeholder.png' }}"
+            alt="Couverture de {{ book.title }}">
+        </figure>
+
+        <div class="book-hero__meta">
+          <h2 class="book-hero__title">{{ book.title }}</h2>
+
+          {% if book.author %}
+            <p class="book-hero__author">Auteur : {{ book.author }}</p>
+          {% endif %}
+
+          <div class="book-hero__tags">
+            <span class="pill pill--light">
+              {{ book.chapter is not null ? (book.chapter ~ ' chapitres') : 'Chapitres : —' }}
+            </span>
+
+            {% set genders = book.genders ?? [] %}
+            {% for g in genders %}
+              <span class="pill pill--light">{{ g }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {# === NOTE / SCORE (alignée à droite) === #}
+    {% if stats is defined %}
+      <section class="book-rating" aria-label="Notes et avis">
+        <div class="container book-rating__row">
+          {% if stats.votes > 0 %}
+            {% set rounded = stats.avg is not null ? (stats.avg|round(0, 'common')) : 0 %}
+            <p class="book-rating__note" aria-live="polite">
+              <span class="stars" aria-label="Note moyenne {{ stats.avg }}/5">
+                {% for i in 1..5 %}
+                  {{ i <= rounded ? '★' : '☆' }}
+                {% endfor %}
+              </span>
+              {{ stats.avg }}/5 — {{ stats.votes }} vote{% if stats.votes > 1 %}s{% endif %}
+            </p>
+          {% else %}
+            <p class="book-rating__note">Aucune note pour le moment.</p>
+          {% endif %}
+        </div>
+      </section>
+    {% endif %}
+
+    {# === SYNOPSIS === #}
+    <section class="book-synopsis">
+      <div class="container">
+        <h3>Synopsis</h3>
+        <p>{{ book.description }}</p>
+      </div>
+    </section>
+</main>
+
+{% endblock %}

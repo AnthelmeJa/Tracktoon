@@ -1,0 +1,136 @@
+@use 'utils' as *;
+
+/* ===== PAGE BOOK ===== */
+
+.book-hero {
+  padding: 5rem 0 2rem 3rem;
+  position: relative;
+  background-color: #000;
+  background-image: var(--cover);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-top: 1px solid rgba(0, 0, 0, 0.205);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+  }
+
+  .book-hero__inner {
+    @include container;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    gap: 2rem;
+    width: 100%;
+    padding-left: 10rem;
+  }
+
+  .book-hero__media {
+    margin: 0;
+    border: 1px solid #000;
+    background: #F4F4F4;
+    overflow: hidden;
+    border-radius: 1rem;
+    flex: 0 0 auto;
+    width: 22rem;
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .book-hero__meta {
+    color: #fff;
+    align-self: flex-end;
+
+    .book-hero__title {
+      margin: 0 0 .6rem;
+      font-size: 2.4rem;
+      line-height: 1.2;
+    }
+
+    .book-hero__author {
+      margin: 0 0 1rem;
+      opacity: .95;
+    }
+
+    .book-hero__tags {
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+    }
+  }
+
+  @include mobile {
+    padding: 3rem 1rem 1.5rem;
+
+    .book-hero__inner {
+      flex-direction: column;
+      align-items: stretch;
+      padding-left: 0;
+    }
+
+    .book-hero__media {
+      width: 100%;
+      max-width: 28rem;
+    }
+
+    .book-hero__meta {
+      align-self: auto;
+    }
+  }
+}
+
+/* petits badges */
+.pill {
+  display: inline-block;
+  padding: .4rem .9rem;
+  border-radius: 999rem;
+  font-size: 1.3rem;
+  line-height: 1;
+  border: 1px solid currentColor;
+
+  &--light {
+    color: #fff;
+    border-color: #fff;
+    background: transparent;
+  }
+}
+
+/* ===== NOTE ===== */
+.book-rating {
+  margin-top: 3rem;
+
+  .book-rating__row {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 3rem;
+  }
+}
+
+/* ===== SYNOPSIS ===== */
+.book-synopsis {
+  margin-top: 2rem;
+}
+
+/* ===== MOBILE ONLY ===== */
+@media (max-width: 768px) {
+  .book-rating .book-rating__row {
+    justify-content: center;
+  }
+
+  .book-synopsis .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+  }
+}

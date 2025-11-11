@@ -83,10 +83,18 @@ class UserController
             $_SESSION['error'] = 'Champs manquants';
             $this->redirect('?route=register'); return;
         }
+
         if ($password !== $confirm) {
             $_SESSION['error'] = 'Les mots de passe ne correspondent pas';
             $this->redirect('?route=register'); return;
         }
+
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $password)) {
+            $_SESSION['error'] = 'Mot de passe trop faible (8 caractères mini, 1 majuscule, 1 minuscule, 1 chiffre).';
+            $this->redirect('?route=register');
+            return;
+        }
+
         if ($this->users->findByMail($mail)) {
             $_SESSION['error'] = 'Utilisateur déjà existant';
             $this->redirect('?route=register'); return;

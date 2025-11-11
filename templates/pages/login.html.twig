@@ -1,11 +1,57 @@
-<h1>Connexion</h1>
-{% if error %}<p style="color:red">{{ error }}</p>{% endif %}
-<form method="post" action="?route=check-login">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>Email</label>
-  <input type="email" name="mail" required>
-  <label>Mot de passe</label>
-  <input type="password" name="password" required>
-  <button type="submit">Se connecter</button>
-</form>
-<p><a href="?route=register">Créer un compte</a></p>
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Connexion — Tracktoon{% endblock %}
+{% block meta_description %}Connectez-vous à Tracktoon pour accéder à votre bibliothèque personnelle et suivre vos lectures de manhwas, manhuas et mangas.{% endblock %}
+
+{% block content %}
+<main role="main">
+
+  {# --- Bandeau / intro --- #}
+  <section class="auth-hero" aria-label="Connexion">
+    <div class="container">
+      <h2>Connexion</h2>
+      <p>Accédez à votre bibliothèque personnelle et suivez vos lectures de manhwas, manhuas et mangas.</p>
+    </div>
+  </section>
+
+  {# --- Carte formulaire --- #}
+  <section class="auth-section" aria-label="Formulaire de connexion">
+    <div class="container">
+      <div class="auth-card">
+
+        {% if error %}
+          <p class="auth-alert" role="alert">{{ error }}</p>
+        {% endif %}
+
+        <h3>Bienvenue sur Tracktoon</h3>
+        <p>Connectez-vous pour accéder à votre compte.</p>
+
+        <form method="post" action="?route=check-login" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+          <label class="auth-field">
+            <span class="auth-label">Adresse e-mail</span>
+            <input class="auth-input" type="email" name="mail" required autocomplete="email" placeholder="vous@exemple.com">
+          </label>
+
+          <label class="auth-field">
+            <span class="auth-label">Mot de passe</span>
+            <input class="auth-input" type="password" name="password" required autocomplete="current-password" placeholder="Votre mot de passe">
+          </label>
+
+          <button type="submit" class="btn-primary">
+            <span aria-hidden="true">🔐</span> Se connecter
+          </button>
+        </form>
+
+        <p class="auth-switch">
+          Pas encore de compte ?
+          <a class="btn-outline-orange" href="?route=register">Créer un compte</a>
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}FAQ — Tracktoon{% endblock %}
+{% block meta_description %}Questions fréquentes sur Tracktoon : utilisation, bibliothèque, recherche, commentaires privés et ajout d’œuvres.{% endblock %}
+
+{% block content %}
+<main role="main">
+
+  {# --- Bandeau / intro (comme login/register) --- #}
+  <section class="faq-hero" aria-label="Foire aux questions">
+    <div class="container">
+      <h2>Questions fréquentes</h2>
+      <p>Trouvez rapidement les réponses aux questions les plus courantes sur Tracktoon.</p>
+    </div>
+  </section>
+
+  {# --- Carte centrale (comme auth-card) --- #}
+  <section class="faq-section" aria-label="Liste des questions">
+    <div class="container">
+      <div class="faq-card">
+
+        <h3 class="faq-title">À propos de Tracktoon</h3>
+        <p class="faq-sub">Voici les réponses aux questions qu’on nous pose le plus souvent.</p>
+
+        <div class="faq-list">
+          <article class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+              Comment ajouter une œuvre à ma bibliothèque ?
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" hidden>
+              <p>
+                Si vous êtes connecté, ouvrez la page de l’œuvre souhaitée puis utilisez le bouton
+                « Ajouter à ma bibliothèque ».
+              </p>
+            </div>
+          </article>
+
+          <article class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+              Comment trouver une œuvre ?
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" hidden>
+              <p>
+                La recherche s’effectue sur la page d’accueil via la barre dédiée : entrez un titre (partiel ou exact),
+                filtrez par type ou par genre, et vous pouvez aussi fixer un nombre minimum de chapitres.
+              </p>
+            </div>
+          </article>
+
+          <article class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+              Comment et pourquoi les commentaires privés ?
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" hidden>
+              <p>
+                Après avoir ajouté une œuvre à votre bibliothèque, vous pouvez écrire des notes privées
+                depuis sa page « utilisateur ». C’est pratique pour noter votre progression ou vos impressions.
+              </p>
+            </div>
+          </article>
+
+          <article class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">
+              Comment ajouter une œuvre qui n’est pas présente sur le site ?
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" hidden>
+              <p>
+                Faites une demande via notre <a href="?route=contact">formulaire de contact</a>. Donne un titre,
+                un auteur et si possible une image : ça accélère la mise en place de l'œuvre.
+              </p>
+            </div>
+          </article>
+        </div>
+
+        <div class="faq-more">
+          <h4>Vous ne trouvez pas votre réponse ?</h4>
+          <p>Contactez-nous !</p>
+          <a class="btn-outline-orange" href="?route=contact">Contact</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock %}

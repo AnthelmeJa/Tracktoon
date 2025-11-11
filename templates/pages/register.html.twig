@@ -1,15 +1,64 @@
-<h1>Inscription</h1>
-{% if error %}<p style="color:red">{{ error }}</p>{% endif %}
-<form method="post" action="?route=check-register">
-  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-  <label>Pseudo</label>
-  <input type="text" name="pseudo" required>
-  <label>Email</label>
-  <input type="email" name="mail" required>
-  <label>Mot de passe</label>
-  <input type="password" name="password" required>
-  <label>Confirmer</label>
-  <input type="password" name="confirm_password" required>
-  <button type="submit">Créer mon compte</button>
-</form>
-<p><a href="?route=login">Déjà un compte ?</a></p>
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Créer un compte — Tracktoon{% endblock %}
+{% block meta_description %}Créez un compte Tracktoon pour suivre vos lectures et gérer votre bibliothèque.{% endblock %}
+
+{% block content %}
+<main role="main">
+
+  <section class="auth-hero" aria-label="Création de compte">
+    <div class="container">
+      <h2>Créer un compte</h2>
+      <p>Créez-vous une bibliothèque personnelle et suivez vos lectures de manhwas, manhuas et mangas.</p>
+    </div>
+  </section>
+
+  <section class="auth-section" aria-label="Formulaire d’inscription">
+    <div class="container">
+      <div class="auth-card">
+
+        {% if error %}<p class="auth-alert" role="alert" aria-live="polite">{{ error }}</p>{% endif %}
+
+        <h3 class="auth-intro-title">Bienvenue sur Tracktoon</h3>
+        <p class="auth-intro-sub">Complétez le formulaire pour créer un compte.</p>
+
+        <form method="post" action="?route=check-register" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+          {# Ligne 2 colonnes : pseudo + email #}
+          <div class="auth-row">
+            <label class="auth-field">
+              <span class="auth-label">Pseudo</span>
+              <input class="auth-input" name="pseudo" type="text" required autocomplete="username" placeholder="Votre pseudo">
+            </label>
+
+            <label class="auth-field">
+              <span class="auth-label">Adresse e-mail</span>
+              <input class="auth-input" name="mail" type="email" required autocomplete="email" inputmode="email" placeholder="vous@exemple.com">
+            </label>
+          </div>
+
+          <label class="auth-field">
+            <span class="auth-label">Mot de passe (Une majuscule, un chiffre et 8 caractère)</span>
+            <input class="auth-input" name="password" type="password" required autocomplete="new-password" placeholder="Créer un mot de passe">
+          </label>
+
+          <label class="auth-field">
+            <span class="auth-label">Confirmer le mot de passe</span>
+            <input class="auth-input" name="confirm_password" type="password" required autocomplete="new-password" placeholder="Répéter le mot de passe">
+          </label>
+
+          <button type="submit" class="btn-orange">Créer mon compte</button>
+        </form>
+
+        <p class="auth-switch">
+          Déjà un compte ?
+          <a class="btn-outline-orange" href="?route=login">Se connecter</a>
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Informations légales — Tracktoon{% endblock %}
+{% block meta_description %}Mentions légales, conditions générales d’utilisation et politique de confidentialité de Tracktoon.{% endblock %}
+
+{% block content %}
+<main role="main">
+
+  {# bandeau comme les autres pages #}
+  <section class="legal-hero" aria-label="Introduction informations légales">
+    <div class="container">
+      <h2>Informations légales</h2>
+      <p>Cette page regroupe nos mentions légales, nos conditions générales d’utilisation (CGU) et notre politique de confidentialité.</p>
+    </div>
+  </section>
+
+  <article class="legal-body" aria-label="Informations légales">
+    <div class="container legal-wrapper">
+
+      <section class="legal-block" aria-label="Mentions légales">
+        <h3>Mentions légales</h3>
+
+        <p><strong>Éditeur du site</strong></p>
+        <address>
+          Tracktoon<br>
+          Raison sociale : Tracktoon <br>
+          Adresse : 4 rue du Manhwa 78520<br>
+          Contact : <a href="mailto:contact@tracktoon.example">contact@tracktoon.example</a><br>
+        </address>
+
+        <p><strong>Directeur de la publication</strong></p>
+        <p>Anthelme Jarreau</p>
+      </section>
+
+      <section class="legal-block" aria-label="Conditions générales d’utilisation">
+        <h3>Conditions générales d’utilisation (CGU)</h3>
+
+        <h4>Acceptation</h4>
+        <p>L’accès et l’utilisation de Tracktoon impliquent l’acceptation sans réserve des présentes CGU.</p>
+
+        <h4>Accès au service</h4>
+        <p>Tracktoon est accessible 7j/7 et 24h/24, sous réserve d’interruptions pour maintenance ou cas de force majeure.</p>
+
+        <h4>Compte utilisateur</h4>
+        <ul>
+          <li>Vous êtes responsable du maintien de la confidentialité de vos identifiants.</li>
+          <li>Vous vous engagez à fournir des informations exactes et à les mettre à jour.</li>
+          <li>Nous pouvons suspendre ou supprimer un compte en cas de non-respect des CGU ou d’usage frauduleux.</li>
+        </ul>
+
+        <h4>Contenus et propriété intellectuelle</h4>
+        <ul>
+          <li>Les marques, logos, éléments graphiques et logiciels de Tracktoon sont protégés.</li>
+          <li>Les textes et images relatifs aux œuvres appartiennent à leurs titulaires de droits respectifs.</li>
+          <li>Toute reproduction non autorisée est interdite.</li>
+        </ul>
+
+        <h4>Responsabilités</h4>
+        <ul>
+          <li>Tracktoon n’est pas responsable des indisponibilités, pertes de données ou dommages indirects.</li>
+          <li>Vous êtes responsable des contenus que vous publiez (commentaires privés, etc.).</li>
+        </ul>
+
+        <h4>Modification des CGU</h4>
+        <p>Nous pouvons modifier les CGU à tout moment. La poursuite de l’utilisation du site vaut acceptation des nouvelles conditions.</p>
+
+        <h4>Loi applicable</h4>
+        <p>Les présentes CGU sont soumises au droit applicable du pays de l’éditeur. En cas de litige, à défaut de résolution amiable, les tribunaux du ressort du siège social de l’éditeur seront seuls compétents.</p>
+      </section>
+
+      <section class="legal-block" aria-label="Politique de confidentialité">
+        <h3>Politique de confidentialité</h3>
+
+        <h4>Données collectées</h4>
+        <ul>
+          <li>Données de compte : pseudo, email, mot de passe (chiffré).</li>
+          <li>Données d’usage : bibliothèque (statut, favoris, commentaires privés), notes/évaluations.</li>
+          <li>Données techniques : logs techniques minimaux, cookies nécessaires au fonctionnement.</li>
+        </ul>
+
+        <h4>Finalités et bases légales</h4>
+        <ul>
+          <li>Fourniture du service (accès au compte, bibliothèque) : exécution du contrat (CGU).</li>
+          <li>Sécurité, prévention de la fraude : intérêt légitime.</li>
+          <li>Contact et support : exécution du contrat / intérêt légitime.</li>
+        </ul>
+
+        <h4>Durées de conservation</h4>
+        <ul>
+          <li>Compte : pendant la durée d’utilisation et jusqu’à suppression du compte.</li>
+          <li>Logs et données techniques : durée strictement nécessaire à la sécurité et à la maintenance.</li>
+        </ul>
+
+        <h4>Destinataires</h4>
+        <p>Les données sont traitées par l’éditeur et, le cas échéant, par ses prestataires (hébergement, maintenance) soumis à confidentialité.</p>
+
+        <h4>Vos droits</h4>
+        <ul>
+          <li>Accès, rectification, effacement, limitation, opposition, portabilité (selon conditions légales).</li>
+          <li>Exercer vos droits : <a href="mailto:privacy@tracktoon.example">privacy@tracktoon.example</a>.</li>
+          <li>Réclamation auprès de l’autorité de contrôle compétente (ex. : CNIL en France).</li>
+        </ul>
+
+        <h4>Cookies</h4>
+        <p>Nous utilisons des cookies strictement nécessaires au fonctionnement du site (authentification, session). Vous pouvez configurer votre navigateur pour les bloquer, mais certaines fonctionnalités risquent de ne plus fonctionner.</p>
+
+        <h4>Modifications</h4>
+        <p>La présente politique peut évoluer. Toute mise à jour sera publiée sur cette page.</p>
+        <p>Dernière mise à jour : 2025.</p>
+      </section>
+    </div>
+  </article>
+</main>
+{% endblock %}

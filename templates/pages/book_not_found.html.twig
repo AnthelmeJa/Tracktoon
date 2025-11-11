@@ -1,0 +1,14 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Œuvre introuvable — Tracktoon{% endblock %}
+{% block meta_description %}La page demandée n’a pas été trouvée.{% endblock %}
+
+{% block content %}
+  <p><a href="?route=home">← Retour</a></p>
+  <h1>Œuvre introuvable</h1>
+  {% if id is defined and id %}
+    <p>Aucune œuvre avec l’identifiant {{ id }}.</p>
+  {% else %}
+    <p>Aucune œuvre demandée.</p>
+  {% endif %}
+{% endblock %}

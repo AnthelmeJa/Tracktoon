@@ -1,0 +1,147 @@
+{# templates/layouts/base.html.twig #}
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}Tracktoon{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Tracktoon — suivez vos manhwas, manhuas et mangas, découvrez les tendances et ne manquez aucun chapitre.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="icon" href="/images/logo.png">
+    <link rel="stylesheet" href="/styles/css/main.css">
+    <script src="https://kit.fontawesome.com/59f1bc3fbe.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <header role="banner" class="site-header">
+  <div class="container">
+    <div class="site-header__row">
+      <a href="?route=home" class="site-logo" aria-label="Tracktoon">
+        {# logo clair par défaut #}
+        <img src="/images/logo1.png" alt="Tracktoon" class="site-logo__img site-logo__img--light">
+        {# logo pour le dark #}
+        <img src="/images/logo2.png" alt="Tracktoon" class="site-logo__img site-logo__img--dark">
+      </a>
+
+      {# NAV principale #}
+      <nav aria-label="Navigation principale" class="site-nav">
+        <ul class="site-nav__list">
+          <li>
+            <a class="site-nav__link" href="?route=home" aria-label="Accueil">
+              <span class="site-nav__icon" aria-hidden="true">
+                <i class="fa-solid fa-house"></i>
+              </span>
+              <span class="site-nav__text">Accueil</span>
+            </a>
+          </li>
+          <li>
+            {% if session.user_id is defined and session.user_id %}
+              <a class="site-nav__link" href="?route=library" aria-label="Bibliothèque">
+                <span class="site-nav__icon" aria-hidden="true">
+                  <i class="fa-solid fa-book"></i>
+                </span>
+                <span class="site-nav__text">Bibliothèque</span>
+              </a>
+            {% else %}
+              <a class="site-nav__link" href="?route=login" aria-label="Connexion requise pour la bibliothèque">
+                <span class="site-nav__icon" aria-hidden="true">
+                  <i class="fa-solid fa-book"></i>
+                </span>
+                <span class="site-nav__text">Bibliothèque</span>
+              </a>
+            {% endif %}
+          </li>
+          <li>
+            <a class="site-nav__link" href="?route=contact" aria-label="Contact">
+              <span class="site-nav__icon" aria-hidden="true">
+                <i class="fa-solid fa-envelope"></i>
+              </span>
+              <span class="site-nav__text">Contact</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      {# ✅ bouton paramètres #}
+      <div class="header-settings">
+        <button class="settings-toggle" type="button" aria-expanded="false" aria-haspopup="true">
+          <span class="u-visually-hidden">Ouvrir les paramètres</span>
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="settings-menu">
+          <button type="button" class="settings-item" data-action="dark">
+            <i class="fa-solid fa-moon"></i>
+            <span>Sombre</span>
+          </button>
+          <button type="button" class="settings-item" data-action="dys">
+            <i class="fa-solid fa-font"></i>
+            <span>Dyslexie</span>
+          </button>
+        </div>
+      </div>
+
+      {# actions (connexion / logout) #}
+      <div class="site-actions">
+        {% if not (session.user_id is defined and session.user_id) %}
+          <a href="?route=login" class="btn btn--ghost site-login-btn" aria-label="Se connecter">
+            <span aria-hidden="true"><i class="fa-solid fa-user"></i></span>
+            <span class="site-login-text">Connexion</span>
+          </a>
+          <a href="?route=register" class="btn btn--solid site-register-btn" aria-label="Créer un compte">
+            Créer un compte
+          </a>
+        {% else %}
+          <a href="?route=logout" class="btn btn--ghost site-login-btn" aria-label="Se déconnecter">
+            <span aria-hidden="true"><i class="fa-solid fa-right-from-bracket"></i></span>
+            <span class="site-login-text">Déconnexion</span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</header>
+
+        {% block content %}{% endblock %}
+            
+    <footer role="contentinfo">
+      <div class="container">
+        <div class="footer-grid">
+          <section class="footer-brand">
+            <a href="?route=home">
+              <img src="/images/logo2.png" alt="Tracktoon">
+            </a>
+            <p>
+              Votre destination idéale pour découvrir et traquer votre lecture de manhwas, manhuas et mangas.
+              Restez informé des dernières tendances et ne manquez aucun chapitre.
+            </p>
+          </section>
+
+          <nav class="footer-links" aria-label="Liens rapides">
+            <h2>Liens rapides</h2>
+            <ul>
+              <li><a href="?route=home">Accueil</a></li>
+              <li><a href="?route=library">Bibliothèque</a></li>
+              <li><a href="?route=login">Connexion</a></li>
+              <li><a href="?route=register">Créer un compte</a></li>
+            </ul>
+          </nav>
+
+          <nav class="footer-support" aria-label="Support">
+            <h2>Support</h2>
+            <ul>
+              <li><a href="?route=faq">FAQ</a></li>
+              <li><a href="?route=contact">Contact</a></li>
+              <li><a href="?route=legal">Informations légales</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="end-footer"> 
+          <p class="footer-copy">© 2025 Tracktoon. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  <script src="/js/app.js"></script>
+  </body>
+</html>
