@@ -116,78 +116,78 @@ class AdminController
         header('Location:?route=admin'); exit;
     }
 
-public function updateBook(): void
-{
-    $this->requireAdmin();
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$this->csrf->validate($_POST['csrf_token'] ?? '')) {
-        $_SESSION['error'] = 'Requête invalide.'; header('Location:?route=admin'); exit;
-    }
+    public function updateBook(): void
+    {
+        $this->requireAdmin();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$this->csrf->validate($_POST['csrf_token'] ?? '')) {
+            $_SESSION['error'] = 'Requête invalide.'; header('Location:?route=admin'); exit;
+        }
 
-    $id    = (int)($_POST['id'] ?? 0);
-    $title = trim($_POST['title'] ?? '');
-    $type  = trim($_POST['type']  ?? '');
-    $desc  = trim($_POST['description'] ?? '');
-    $imageRaw = trim($_POST['image'] ?? '');
-    if ($imageRaw === '') {
-        $image = null;
-    } else {
-        if (filter_var($imageRaw, FILTER_VALIDATE_URL) || str_starts_with($imageRaw, '/')) {
-            $image = $imageRaw;
+        $id    = (int)($_POST['id'] ?? 0);
+        $title = trim($_POST['title'] ?? '');
+        $type  = trim($_POST['type']  ?? '');
+        $desc  = trim($_POST['description'] ?? '');
+        $imageRaw = trim($_POST['image'] ?? '');
+        if ($imageRaw === '') {
+            $image = null;
         } else {
-            if (str_stwcmp($imageRaw, 'images/') === 0) {
-                $image = '/' . $imageRaw;
+            if (filter_var($imageRaw, FILTER_VALIDATE_URL) || str_starts_with($imageRaw, '/')) {
+                $image = $imageRaw;
             } else {
-                $_SESSION['error'] = 'Le champ Image doit être une URL (http/https) ou un chemin commençant par /images/...';
-                header('Location:?route=admin'); exit;
+                if (str_starts_with($imageRaw, 'images/')) {
+                    $image = '/' . $imageRaw;
+                } else {
+                    $_SESSION['error'] = 'Le champ Image doit être une URL (http/https) ou un chemin commençant par /images/...';
+                    header('Location:?route=admin'); exit;
+                }
             }
         }
-    }
-    $chap  = trim($_POST['chapter'] ?? '');
-    $chapter = ($chap === '' ? null : (int)$chap);
-    $genders = array_values(array_filter(
-        array_unique(
-            array_map(fn($g) => mb_strtolower(trim($g)), explode(',', $_POST['genders'] ?? ''))
-        ),
-        fn($g) => $g !== ''
-    ));
-    $author = trim($_POST['author'] ?? '');
+        $chap  = trim($_POST['chapter'] ?? '');
+        $chapter = ($chap === '' ? null : (int)$chap);
+        $genders = array_values(array_filter(
+            array_unique(
+                array_map(fn($g) => mb_strtolower(trim($g)), explode(',', $_POST['genders'] ?? ''))
+            ),
+            fn($g) => $g !== ''
+        ));
+        $author = trim($_POST['author'] ?? '');
 
-    if ($id <= 0) { $_SESSION['error'] = 'ID book invalide.'; header('Location:?route=admin'); exit; }
+        if ($id <= 0) { $_SESSION['error'] = 'ID book invalide.'; header('Location:?route=admin'); exit; }
 
-    try {
-        $existing = $this->books->findOne($id);
-        if (!$existing) { $_SESSION['error'] = 'Livre introuvable.'; header('Location:?route=admin'); exit; }
+        try {
+            $existing = $this->books->findOne($id);
+            if (!$existing) { $_SESSION['error'] = 'Livre introuvable.'; header('Location:?route=admin'); exit; }
 
-        // On décide des valeurs finales champ par champ
-        $finalTitle   = ($title   !== '') ? $title   : $existing->getTitle();
-        $finalType    = ($type    !== '') ? $type    : $existing->getType();
-        $finalDesc    = ($desc    !== '') ? $desc    : $existing->getDescription();
-        $finalImage   = ($image !== null) ? $image   : $existing->getImage();        // null => inchangé
-        $finalChapter = ($chapter !== null) ? $chapter : $existing->getChapter();    // null => inchangé
-        $finalGenders = !empty($genders) ? $genders : $existing->getGenders();
-        $finalAuthor  = ($author !== '') ? $author : $existing->getAuthor();
+            // On décide des valeurs finales champ par champ
+            $finalTitle   = ($title   !== '') ? $title   : $existing->getTitle();
+            $finalType    = ($type    !== '') ? $type    : $existing->getType();
+            $finalDesc    = ($desc    !== '') ? $desc    : $existing->getDescription();
+            $finalImage   = ($image !== null) ? $image   : $existing->getImage();        // null => inchangé
+            $finalChapter = ($chapter !== null) ? $chapter : $existing->getChapter();    // null => inchangé
+            $finalGenders = !empty($genders) ? $genders : $existing->getGenders();
+            $finalAuthor  = ($author !== '') ? $author : $existing->getAuthor();
 
-        $book = new Book(
-            $finalTitle,
-            $finalType,
-            $finalDesc,
-            $finalImage,
-            $finalChapter,
-            $finalGenders,
-            $finalAuthor
-        );
-        $book->setId($id);
+            $book = new Book(
+                $finalTitle,
+                $finalType,
+                $finalDesc,
+                $finalImage,
+                $finalChapter,
+                $finalGenders,
+                $finalAuthor
+            );
+            $book->setId($id);
 
-        if ($this->books->update($book)) {
-            $_SESSION['success'] = 'Livre mis à jour.';
-        } else {
-            $_SESSION['error'] = 'Échec mise à jour.';
+            if ($this->books->update($book)) {
+                $_SESSION['success'] = 'Livre mis à jour.';
+            } else {
+                $_SESSION['error'] = 'Échec mise à jour.';
+            }
+        } catch (\Exception $e) {
+            $_SESSION['error'] = 'Entrées invalides.';
         }
-    } catch (\Exception $e) {
-        $_SESSION['error'] = 'Entrées invalides.';
+        header('Location:?route=admin'); exit;
     }
-    header('Location:?route=admin'); exit;
-}
 
     public function deleteBook(): void
     {

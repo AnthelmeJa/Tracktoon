@@ -84,6 +84,11 @@ class UserController
             $this->redirect('?route=register'); return;
         }
 
+        if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error'] = 'Email non conforme';
+            $this->redirect('?route=register'); return;
+        }
+
         if ($password !== $confirm) {
             $_SESSION['error'] = 'Les mots de passe ne correspondent pas';
             $this->redirect('?route=register'); return;
@@ -124,7 +129,7 @@ class UserController
         $this->redirect('?route=home');
     }
 
-    private function redirect(string $url): void
+    protected function redirect(string $url): void
     {
         header('Location: ' . $url);
         exit;

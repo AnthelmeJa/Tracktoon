@@ -87,7 +87,7 @@
     {# --- BARRE OUTILS : à gauche statut/favori, à droite note modifiable --- #}
     {% if entry %}
       <section class="book-tools" aria-label="Réglages personnels">
-        <div class="book-tools__left">
+        <div class="book-tools__left" data-save-endpoint="?route=library-save" data-book-id="{{ book.id }}" data-csrf="{{ csrf_token }}" >
           <form class="book-tools__form" method="post" action="?route=library-save">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <input type="hidden" name="book_id" value="{{ book.id }}">
@@ -103,33 +103,27 @@
               <input type="checkbox" name="favori" value="1" {{ entry.favori ? 'checked' }}>
               Favori
             </label>
-
-            {# bouton laissé pour fallback si JS off #}
-            <button type="submit" class="btn-save-light">Enregistrer</button>
+            {# petit msg que le JS remplira #}
+            <span class="bt-feedback u-visually-hidden" aria-live="polite"></span>
           </form>
         </div>
 
-        <div class="book-tools__right">
+        <div class="book-tools__right" data-rate-endpoint="?route=book-rate" data-book-id="{{ book.id }}" data-csrf="{{ csrf_token }}" >
           <form class="js-rate-form" method="post" action="?route=book-rate">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <input type="hidden" name="book_id" value="{{ book.id }}">
             <input type="hidden" name="score" value="{{ my_score is defined ? my_score : '' }}">
 
-            <fieldset class="stars-fieldset">
+            <fieldset class="stars-fieldset js-star-rating">
               <legend class="u-visually-hidden">Votre note</legend>
               {% for n in 1..5 %}
-                <button
-                  type="button"
-                  class="star-btn {{ (my_score is defined and my_score >= n) ? 'is-filled' }}"
-                  data-score="{{ n }}"
-                >
+                <button type="button" class="star-btn {{ (my_score is defined and my_score >= n) ? 'is-filled' }}" data-score="{{ n }}" >
                   ★
                   <span class="u-visually-hidden">{{ n }} sur 5</span>
                 </button>
               {% endfor %}
             </fieldset>
-
-            <p class="star-feedback" aria-live="polite"></p>
+            <p class="star-feedback u-visually-hidden" aria-live="polite"></p>
           </form>
         </div>
       </section>
