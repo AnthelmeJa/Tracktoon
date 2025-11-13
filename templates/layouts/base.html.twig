@@ -19,7 +19,7 @@
   </head>
   
   <body>
-    <header role="banner" class="site-header">
+    <header class="site-header">
   <div class="container">
     <div class="site-header__row">
       <a href="?route=home" class="site-logo" aria-label="Tracktoon">
@@ -109,10 +109,10 @@
 
         {% block content %}{% endblock %}
             
-    <footer role="contentinfo">
+    <footer>
       <div class="container">
         <div class="footer-grid">
-          <section class="footer-brand">
+          <div class="footer-brand">
             <a href="?route=home">
               <img src="/images/logo2.png" alt="Tracktoon">
             </a>
@@ -120,7 +120,7 @@
               Votre destination idéale pour découvrir et traquer votre lecture de manhwas, manhuas et mangas.
               Restez informé des dernières tendances et ne manquez aucun chapitre.
             </p>
-          </section>
+          </div>
 
           <nav class="footer-links" aria-label="Liens rapides">
             <h2>Liens rapides</h2>

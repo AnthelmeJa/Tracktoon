@@ -13,7 +13,7 @@
 {% set counts = library_counts is defined ? library_counts : { a_lire:0, en_cours:0, termine:0, favoris:0 } %}
 {% set total_all = counts.a_lire + counts.en_cours + counts.termine %}
 {% set f = active_filter|default('all') %}
-<main role="main">
+<main>
 <div class="book-user">
 
   {# ==== COLONNE GAUCHE : Ma bibliothèque / filtres ==== #}
@@ -94,6 +94,9 @@
 
             <label class="u-visually-hidden" for="statut">Statut</label>
             <select id="statut" name="statut" required class="bt-input">
+              {# placeholder obligatoire en premier, value="" #}
+              <option value="" disabled {{ entry.statut is defined ? '' : 'selected' }}>— Sélectionner un statut —</option>
+
               <option value="a_lire"   {{ entry.statut == 'a_lire'   ? 'selected' }}>À lire</option>
               <option value="en_cours" {{ entry.statut == 'en_cours' ? 'selected' }}>En cours</option>
               <option value="termine"  {{ entry.statut == 'termine'  ? 'selected' }}>Terminé</option>
@@ -153,7 +156,7 @@
       </section>
 
       {# Retirer de la bibliothèque #}
-      <section class="book-remove">
+      <div class="book-remove">
         <form method="post" action="?route=library-remove"
               onsubmit="return confirm('Retirer cette œuvre de votre bibliothèque ?');">
           <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -161,7 +164,7 @@
           <input type="hidden" name="filter" value="{{ active_filter|default('all') }}">
           <button type="submit" class="btn-remove">Retirer de ma bibliothèque</button>
         </form>
-      </section>
+      </div>
     {% else %}
       <section aria-label="Ajouter à ma bibliothèque">
         <form method="post" action="?route=library-add">

@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     btn.addEventListener('click', function () {
       const isOpen = btn.getAttribute('aria-expanded') === 'true';
 
-      // fermer les autres
+      // close
       items.forEach((other) => {
         if (other !== item) {
           const obtn = other.querySelector('.faq-question');
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
 
-      // ouvrir / fermer le bon
+      // open / fermer le bon
       if (!isOpen) {
         btn.setAttribute('aria-expanded', 'true');
         panel.hidden = false;
