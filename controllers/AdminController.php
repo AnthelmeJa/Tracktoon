@@ -158,12 +158,11 @@ class AdminController
             $existing = $this->books->findOne($id);
             if (!$existing) { $_SESSION['error'] = 'Livre introuvable.'; header('Location:?route=admin'); exit; }
 
-            // On décide des valeurs finales champ par champ
             $finalTitle   = ($title   !== '') ? $title   : $existing->getTitle();
             $finalType    = ($type    !== '') ? $type    : $existing->getType();
             $finalDesc    = ($desc    !== '') ? $desc    : $existing->getDescription();
-            $finalImage   = ($image !== null) ? $image   : $existing->getImage();        // null => inchangé
-            $finalChapter = ($chapter !== null) ? $chapter : $existing->getChapter();    // null => inchangé
+            $finalImage   = ($image !== null) ? $image   : $existing->getImage();
+            $finalChapter = ($chapter !== null) ? $chapter : $existing->getChapter();
             $finalGenders = !empty($genders) ? $genders : $existing->getGenders();
             $finalAuthor  = ($author !== '') ? $author : $existing->getAuthor();
 
@@ -222,22 +221,20 @@ class AdminController
         $pseudo = trim($_POST['pseudo'] ?? '');
         $mail   = strtolower(trim($_POST['mail'] ?? ''));
         $role   = trim($_POST['role'] ?? 'user');
-        $pass   = $_POST['password'] ?? ''; // vide => ne pas changer
+        $pass   = $_POST['password'] ?? '';
 
         try {
             $current = $this->users->findOne($id);
             if (!$current) { $_SESSION['error'] = 'Utilisateur introuvable.'; header('Location:?route=admin'); exit; }
 
-            // Reconstruire un Users
             $user = new Users($pseudo ?: $current->getPseudo(),
                               $mail   ?: $current->getMail(),
-                              $pass   ?: $current->getPassword(), // setPassword gère $hashed=false, donc:
+                              $pass   ?: $current->getPassword(),
                               $role);
             $user->setId($id);
 
-            // si pas de changement de mdp, on réinjecte tel quel (hash déjà en base)
             if ($pass === '') {
-                $user->setPassword($current->getPassword(), true); // true => déjà hashé
+                $user->setPassword($current->getPassword(), true);
             }
 
             if ($this->users->update($user)) {

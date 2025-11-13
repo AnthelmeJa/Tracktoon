@@ -106,9 +106,7 @@ body.theme-dys button {
   font-display: swap;
 }
 
-/* === Variante Alta (optionnelle) ===
-   Tu peux la garder sous un nom à part si un jour tu veux switcher sur cette version
-   qui est un peu différente visuellement.
+/* === Variante Alta  ===
 */
 @font-face {
   font-family: 'OpenDyslexicAlta';
@@ -139,7 +137,6 @@ body.theme-dys button {
   font-display: swap;
 }
 
-/* (facultatif) la version mono */
 @font-face {
   font-family: 'OpenDyslexicMono';
   src: url('/fonts/OpenDyslexicMono-Regular.otf') format('opentype');

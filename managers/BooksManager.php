@@ -187,7 +187,6 @@ public function findOneByTitleExact(string $title): ?Book
     $row = $query->fetch(PDO::FETCH_ASSOC);
     if (!$row) return null;
 
-    // Récupérer les genres
     $qGenres = $this->db->prepare(
         'SELECT g.gender
          FROM genders g

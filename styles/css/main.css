@@ -131,9 +131,7 @@ body.theme-dys button {
   font-style: italic;
   font-display: swap;
 }
-/* === Variante Alta (optionnelle) ===
-   Tu peux la garder sous un nom à part si un jour tu veux switcher sur cette version
-   qui est un peu différente visuellement.
+/* === Variante Alta  ===
 */
 @font-face {
   font-family: "OpenDyslexicAlta";
@@ -163,7 +161,6 @@ body.theme-dys button {
   font-style: italic;
   font-display: swap;
 }
-/* (facultatif) la version mono */
 @font-face {
   font-family: "OpenDyslexicMono";
   src: url("/fonts/OpenDyslexicMono-Regular.otf") format("opentype");
@@ -478,11 +475,12 @@ body.theme-dark .contact-form {
 
 body.theme-dark .faq-question {
   background: rgba(37, 37, 37, 0.6);
-  color: #fff;
+  color: black;
 }
 
 body.theme-dark .faq-answer {
   background: transparent;
+  color: black;
 }
 
 body.theme-dark .btn-outline-orange {

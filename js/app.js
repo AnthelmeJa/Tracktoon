@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const menu   = document.querySelector('.settings-menu');
   const BODY   = document.body;
 
-  // on va s'en servir plus bas
   function setDarkLabel() {
     const btn = menu?.querySelector('[data-action="dark"]');
     if (!btn) return;

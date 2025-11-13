@@ -30,7 +30,7 @@ class LibraryManager extends AbstractManager
         return $result;
     }
 
-    /** Récupère l'entrée d'un user pour un book (ou null si absente) */
+    /** Récupère l'entrée d'un user pour un book  */
     public function findOne(int $userId, int $bookId): ?Library
     {
         $query = $this->db->prepare(
@@ -106,7 +106,7 @@ class LibraryManager extends AbstractManager
         return $query->execute(['id_user' => $userId, 'id_book' => $bookId]);
     }
 
-    /** IDs des favoris d’un utilisateur (pratique pour badges/filtre) */
+    /** IDs des favoris d’un utilisateur  */
     public function getFavoritesBookIds(int $userId): array
     {
         $query = $this->db->prepare(

@@ -35,7 +35,6 @@ class LibraryController
             default:         $filter = 'all';
         }
 
-        // Liste filtrée pour l'affichage
         $entries = $this->library->findAll($userId, $statut, $favori);
 
         $items = [];
@@ -54,13 +53,12 @@ class LibraryController
             }
         }
 
-        // 💡 NEW: counts globaux, indépendants du filtre actif
         $counts = $this->library->getCounts($userId);
 
         echo $this->twig->render('pages/library.html.twig', [
             'items'          => $items,
             'active_filter'  => $filter,
-            'library_counts' => $counts,   // 💡 passe-les au template
+            'library_counts' => $counts,
             'error'          => $_SESSION['error'] ?? null,
         ]);
         unset($_SESSION['error']);
@@ -69,7 +67,6 @@ class LibraryController
 
     public function add(): void
     {
-        // Si non connecté, on renvoie vers login (sécurité côté serveur)
         if (empty($_SESSION['user_id'])) {
             header('Location:?route=login'); exit;
         }
@@ -165,7 +162,6 @@ class LibraryController
             $_SESSION['error'] = 'Impossible de retirer cette œuvre.';
         }
 
-        // On revient sur la bibliothèque, en conservant le filtre si transmis
         $filter = $_POST['filter'] ?? null;
         $dest = '?route=library' . ($filter ? '&filter=' . urlencode($filter) : '');
         header('Location:' . $dest); exit;
