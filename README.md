@@ -1,4 +1,4 @@
-Tracktoon — README
+Tracktoon — README (a lire en code)
 
 Suivez vos manhwas, manhuas et mangas : créez un compte, gérez votre bibliothèque (statut, favoris, notes), notez les œuvres, consultez la FAQ…
 Stack : PHP 8.3, Apache, MySQL, Twig, Composer, Sass, Vanilla JS. Tests unitaires avec PHPUnit. Environnement local : WAMP (Windows), mais fonctionne aussi hors-WAMP.
