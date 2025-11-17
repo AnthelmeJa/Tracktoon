@@ -338,11 +338,7 @@ body.theme-dark .faq-answer {
   color: black;
 }
 
-body.theme-dark .btn-outline-orange {
-  background: #FF6900;
-  color: #fff;
-  border-color: #FF6900;
-}
+
 
 /* cartes */
 body.theme-dark .contact-form,
@@ -386,6 +382,17 @@ body.theme-dark .btn-save-orange {
 /* nav desktop  */
 body.theme-dark .site-nav__icon i {
   color: #fff;
+}
+
+body.theme-dark .btn-outline-orange,
+body.theme-dark .btn-primary,
+body.theme-dark .btn-orange,
+body.theme-dark .btn-save-light,
+body.theme-dark .search-submit,
+body.theme-dark .contact-form button[type="submit"] {
+  background: #262626;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 /* nav mobile */

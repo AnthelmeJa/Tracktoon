@@ -483,12 +483,6 @@ body.theme-dark .faq-answer {
   color: black;
 }
 
-body.theme-dark .btn-outline-orange {
-  background: #FF6900;
-  color: #fff;
-  border-color: #FF6900;
-}
-
 /* cartes */
 body.theme-dark .contact-form,
 body.theme-dark .contact-aside,
@@ -531,6 +525,17 @@ body.theme-dark .btn-save-orange {
 /* nav desktop  */
 body.theme-dark .site-nav__icon i {
   color: #fff;
+}
+
+body.theme-dark .btn-outline-orange,
+body.theme-dark .btn-primary,
+body.theme-dark .btn-orange,
+body.theme-dark .btn-save-light,
+body.theme-dark .search-submit,
+body.theme-dark .contact-form button[type=submit] {
+  background: #262626;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 /* nav mobile */
@@ -992,6 +997,10 @@ body.theme-dark .search-submit {
   color: #fff;
 }
 
+.book-user .btn-save-orange {
+  margin: 0 0 3rem 3rem;
+}
+
 .btn-remove {
   padding: 0.9rem 1.4rem;
   border-radius: 0.8rem;
@@ -1177,7 +1186,7 @@ body.theme-dark .book-user .book-user__nav .nav-stats a {
 /* ===== Grille des cards ===== */
 .lib-grid {
   list-style: none;
-  margin: 3rem 0 0 3rem;
+  margin: 3rem 3rem 0 3rem;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -1375,6 +1384,10 @@ body.theme-dark .lib-card {
   background: #FEF4EF;
   border-radius: 1rem;
   padding: 2rem;
+}
+.contact-panel .contact-form button {
+  border-radius: 1rem;
+  padding: 1.2rem 1.8rem;
 }
 .contact-panel .contact-form h3 {
   margin: 0 0 0.6rem;
@@ -1660,6 +1673,11 @@ body.theme-dark .lib-card {
   background: #fff;
   color: #FF6900;
   text-decoration: none;
+}
+.faq-section body.theme-dark .faq-section .faq-card .faq-more .btn-outline-orange {
+  background: #262626;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 @media (max-width: 768px) {
   .faq-section {
