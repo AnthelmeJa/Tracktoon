@@ -8,39 +8,39 @@ Le projet a été développé en PHP 8 (stack WAMP au départ), puis **conteneur
 
 ## 🌐 Fonctionnalités principales
 
-- Page d’accueil présentant les séries mises en avant
+- Page d’accueil présentant les séries mises en avant  
 - Bibliothèque utilisateur :
-  - statut de lecture : à lire / en cours / terminé
-  - favoris
-  - commentaires personnels
-- Système de notes (`scores`) par utilisateur et par série
-- Gestion des genres (association `books_genders`)
+  - statut de lecture : à lire / en cours / terminé  
+  - favoris  
+  - commentaires personnels  
+- Système de notes (`scores`) par utilisateur et par série  
+- Gestion des genres (association `books_genders`)  
 - Espace d’authentification :
-  - inscription
-  - connexion / déconnexion
-  - rôles : `user`, `admin`, `super_admin`
-- Pages FAQ, contact, mentions légales, etc.
-- Thème **sombre / clair** et quelques options d’accessibilité (dyslexie)
+  - inscription  
+  - connexion / déconnexion  
+  - rôles : `user`, `admin`, `super_admin`  
+- Pages FAQ, contact, mentions légales, etc.  
+- Thème **sombre / clair** et quelques options d’accessibilité (dyslexie)  
 - Envoi d’e-mails via **PHPMailer** (si variables SMTP configurées)
 
 ---
 
 ## 🧱 Stack technique
 
-- **Langage** : PHP 8.3
-- **Serveur web** : Apache 2.4 (image Docker officielle `php:8.3-apache`)
-- **Base de données (prod)** : TiDB Cloud (compatible MySQL)
-- **Gestionnaire de dépendances** : Composer 2
-- **Templating** : Twig
+- **Langage** : PHP 8.3  
+- **Serveur web** : Apache 2.4 (image Docker officielle `php:8.3-apache`)  
+- **Base de données (prod)** : TiDB Cloud (compatible MySQL)  
+- **Gestionnaire de dépendances** : Composer 2  
+- **Templating** : Twig  
 - **Styles** :
   - Sass/SCSS (`styles/scss`)
   - CSS compilé (`styles/css`)
 - **Tests** : PHPUnit (`test/`)
-- **Mailing** : PHPMailer
+- **Mailing** : PHPMailer  
 - **Gestion de la configuration sensible** :
   - `.env` local (non versionné)
   - `phpdotenv`
-- **Conteneurisation** : Docker & Docker Hub
+- **Conteneurisation** : Docker & Docker Hub  
 - **Déploiement** : Render (web service Docker)
 
 ---
@@ -79,21 +79,22 @@ config/
 
 autoload.php : charge Composer + modèles + managers + services + contrôleurs.
 
-models/ : entités métier (Users, Book, Scores, Library, Gender, etc.).
+models/
+Entités métier (Users, Book, Scores, Library, Gender, etc.).
 
-managers/ :
+managers/
 
 AbstractManager : ouvre la connexion PDO (MySQL/TiDB) en lisant les variables d’environnement.
 
 Managers spécifiques : UsersManager, BooksManager, etc.
 
-services/ :
+services/
 
 Router : résout les routes (?route=home, ?route=login, etc.).
 
 CSRFTokenManager : gestion des tokens CSRF.
 
-templates/ :
+templates/
 
 Layout global : layouts/base.html.twig
 
@@ -162,26 +163,22 @@ MAIL_TO=
 Si elles restent vides, les fonctionnalités d’envoi d’email peuvent être désactivées ou gérées avec des garde-fous dans le code.
 
 💻 Installation & exécution en local (WAMP)
-Cloner le dépôt :
-
+1. Cloner le dépôt
 bash
 
 git clone <url-du-repo>
 cd Tracktoon
-Installer les dépendances PHP :
-
+2. Installer les dépendances PHP
 bash
 
 composer install
-Installer les dépendances front (optionnel, si besoin de recompiler le CSS) :
-
+3. Installer les dépendances front (optionnel, si besoin de recompiler le CSS)
 bash
 
 npm install
 # puis
 npm run build   # ou npm run dev selon package.json
-Créer un fichier .env à la racine et y définir au minimum :
-
+4. Créer un fichier .env à la racine
 dotenv
 
 APP_ENV=dev
@@ -193,16 +190,14 @@ DB_NAME=...
 DB_USER=...
 DB_PASSWORD=...
 DB_CHARSET=utf8mb4
+5. Lancer via WAMP
 Placer le projet dans le répertoire servi par WAMP (ou configurer un VirtualHost qui pointe vers ce dossier), puis accéder à :
 
 text
 
 http://localhost/Tracktoon
 🐳 Exécution en local avec Docker (image seule + TiDB Cloud)
-S’assurer que la base est accessible (TiDB Cloud, base test, tables importées).
-
-Créer un fichier .env.docker :
-
+1. Préparer .env.docker
 dotenv
 
 APP_ENV=dev
@@ -217,18 +212,15 @@ DB_CHARSET=utf8mb4
 DB_SSL_CA_PATH=/etc/ssl/certs/ca-certificates.crt
 
 # éventuellement les variables MAIL_*
-Builder l’image Docker :
-
+2. Builder l’image Docker
 bash
 
 docker build -t tracktoon:latest .
-Lancer le conteneur :
-
+3. Lancer le conteneur
 bash
 
 docker run --rm -p 8080:80 --env-file .env.docker tracktoon:latest
-Accéder au site :
-
+4. Accéder au site
 text
 
 http://localhost:8080
@@ -247,7 +239,8 @@ bash
 php vendor/bin/phpunit
 🗄️ Base de données (schéma)
 Le schéma est compatible MySQL / TiDB.
-Les tables principales :
+
+Tables principales :
 
 users : utilisateurs (id, pseudo, mail, mot de passe hashé, rôle)
 
@@ -329,12 +322,15 @@ La configuration TLS pour TiDB Cloud est gérée par DB_SSL_CA_PATH et les optio
 
 Le projet a été initialement développé en local sous WAMP, puis migré vers une architecture Docker + Render + TiDB Cloud pour le déploiement.
 
-markdown
+pgsql
 
 
-Tu peux évidemment :
-
-- remplacer les `<dockerhub_user>`, `<host_tidb>`, etc. par tes vraies valeurs,
-- ajouter une section “Crédits” / “Auteur” si tu veux,
-- ou une section “Roadmap” pour lister des futures évolutions.
+Là, chaque bloc de code est bien ouvert et **fermé avec ```**, donc GitHub ne devrait plus tout englober en un seul bloc.  
+Une fois collé / commit, regarde l’aperçu du README sur GitHub : tu devrais retrouver une mise en page propre avec titres, listes et blocs de code bien séparés.
 ::contentReference[oaicite:0]{index=0}
+
+
+
+
+
+
