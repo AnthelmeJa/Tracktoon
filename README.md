@@ -322,13 +322,6 @@ La configuration TLS pour TiDB Cloud est gérée par DB_SSL_CA_PATH et les optio
 
 Le projet a été initialement développé en local sous WAMP, puis migré vers une architecture Docker + Render + TiDB Cloud pour le déploiement.
 
-pgsql
-
-
-Là, chaque bloc de code est bien ouvert et **fermé avec ```**, donc GitHub ne devrait plus tout englober en un seul bloc.  
-Une fois collé / commit, regarde l’aperçu du README sur GitHub : tu devrais retrouver une mise en page propre avec titres, listes et blocs de code bien séparés.
-::contentReference[oaicite:0]{index=0}
-
 
 
 
