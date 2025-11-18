@@ -109,6 +109,7 @@ test/ : tests unitaires PHPUnit.
 L’application repose sur des variables d’environnement pour la base de données et l’envoi d’e-mails.
 
 Variables DB (communes Docker / Render / TiDB)
+dotenv
 
 APP_ENV=dev|prod
 APP_DEBUG=true|false
@@ -124,6 +125,7 @@ DB_CHARSET=utf8mb4
 DB_SSL_CA_PATH=/etc/ssl/certs/ca-certificates.crt
 Dans AbstractManager, la connexion PDO est construite comme suit :
 
+php
 
 $host    = getenv('DB_HOST')     ?: ($_ENV['DB_HOST']     ?? '127.0.0.1');
 $port    = getenv('DB_PORT')     ?: ($_ENV['DB_PORT']     ?? '3306');
@@ -133,6 +135,7 @@ $user    = getenv('DB_USER')     ?: ($_ENV['DB_USER']     ?? 'root');
 $pass    = getenv('DB_PASSWORD') ?: ($_ENV['DB_PASSWORD'] ?? '');
 Et des options PDO supplémentaires permettent d’activer TLS pour TiDB :
 
+php
 
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -147,6 +150,7 @@ if ($sslCaPath) {
 
 $this->db = new PDO($dsn, $user, $pass, $options);
 Variables mail (PHPMailer)
+dotenv
 
 MAIL_HOST=
 MAIL_PORT=
@@ -159,18 +163,26 @@ Si elles restent vides, les fonctionnalités d’envoi d’email peuvent être d
 
 💻 Installation & exécution en local (WAMP)
 Cloner le dépôt :
+
+bash
+
 git clone <url-du-repo>
 cd Tracktoon
-
 Installer les dépendances PHP :
+
+bash
+
 composer install
-
 Installer les dépendances front (optionnel, si besoin de recompiler le CSS) :
-npm install
 
+bash
+
+npm install
 # puis
 npm run build   # ou npm run dev selon package.json
 Créer un fichier .env à la racine et y définir au minimum :
+
+dotenv
 
 APP_ENV=dev
 APP_DEBUG=true
@@ -183,12 +195,15 @@ DB_PASSWORD=...
 DB_CHARSET=utf8mb4
 Placer le projet dans le répertoire servi par WAMP (ou configurer un VirtualHost qui pointe vers ce dossier), puis accéder à :
 
+text
 
 http://localhost/Tracktoon
 🐳 Exécution en local avec Docker (image seule + TiDB Cloud)
 S’assurer que la base est accessible (TiDB Cloud, base test, tables importées).
 
 Créer un fichier .env.docker :
+
+dotenv
 
 APP_ENV=dev
 APP_DEBUG=true
@@ -203,24 +218,33 @@ DB_SSL_CA_PATH=/etc/ssl/certs/ca-certificates.crt
 
 # éventuellement les variables MAIL_*
 Builder l’image Docker :
+
+bash
+
 docker build -t tracktoon:latest .
-
 Lancer le conteneur :
-docker run --rm -p 8080:80 --env-file .env.docker tracktoon:latest
 
+bash
+
+docker run --rm -p 8080:80 --env-file .env.docker tracktoon:latest
 Accéder au site :
 
+text
 
 http://localhost:8080
 🧪 Tests
 Les tests unitaires sont situés dans le dossier test/.
 
 Pour les exécuter :
+
+bash
+
 ./vendor/bin/phpunit
-
 ou, selon la config :
-php vendor/bin/phpunit
 
+bash
+
+php vendor/bin/phpunit
 🗄️ Base de données (schéma)
 Le schéma est compatible MySQL / TiDB.
 Les tables principales :
@@ -243,6 +267,7 @@ Un script SQL complet (adapté à TiDB) est utilisé pour créer la base et ins�
 
 🚀 Déploiement
 1. Build & push de l’image Docker
+bash
 
 docker build -t tracktoon:latest .
 docker tag tracktoon:latest <dockerhub_user>/tracktoon:1.0.1
@@ -257,6 +282,8 @@ Port : 80
 Instance type : Free
 
 Dans l’onglet Environment, définir les mêmes variables que dans .env.docker, mais adaptées à la prod :
+
+dotenv
 
 APP_ENV=prod
 APP_DEBUG=false
@@ -276,13 +303,15 @@ MAIL_PASSWORD=
 MAIL_FROM=
 MAIL_FROM_NAME=
 MAIL_TO=
-
 Laisser Render déployer, puis accéder à l’URL générée, par exemple :
+
+text
+
 https://tracktoon-1-0-1.onrender.com/
-
-
 🌍 Nom de domaine
 Par défaut, Render fournit une URL du type :
+
+text
 
 https://tracktoon-1-0-1.onrender.com/
 Pour utiliser un domaine personnalisé (par exemple https://www.tracktoon.com) :
@@ -293,13 +322,14 @@ Ajouter ce domaine dans l’onglet Custom Domains du service Render.
 
 Créer les entrées DNS nécessaires (CNAME, etc.) côté registrar.
 
-
 📌 Notes
 Les fichiers .env et .env.docker ne sont pas commités dans le dépôt (ajoutés dans .gitignore).
 
 La configuration TLS pour TiDB Cloud est gérée par DB_SSL_CA_PATH et les options PDO.
 
 Le projet a été initialement développé en local sous WAMP, puis migré vers une architecture Docker + Render + TiDB Cloud pour le déploiement.
+
+markdown
 
 
 Tu peux évidemment :
