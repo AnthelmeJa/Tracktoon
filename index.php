@@ -1,11 +1,9 @@
 <?php
-require __DIR__ . '/config/autoload.php';
-
 session_start();
 
-// .env
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+// Autoload + Dotenv + require des classes
+require __DIR__ . '/config/autoload.php';
 
 $router = new Router();
+
 $router->handleRequest($_GET);

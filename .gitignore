@@ -5,10 +5,12 @@
 composer.lock
 # Fichiers de configuration sensibles
 .env
-
+.dockerignore
+.env.docker
 # Système
 .DS_Store
 Thumbs.db
 
 # Logs
 *.log
+

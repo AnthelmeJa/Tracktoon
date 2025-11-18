@@ -1,53 +1,55 @@
-Tracktoon — README (a lire en code)
+# Tracktoon
 
-Suivez vos manhwas, manhuas et mangas : créez un compte, gérez votre bibliothèque (statut, favoris, notes), notez les œuvres, consultez la FAQ…
-Stack : PHP 8.3, Apache, MySQL, Twig, Composer, Sass, Vanilla JS. Tests unitaires avec PHPUnit. Environnement local : WAMP (Windows), mais fonctionne aussi hors-WAMP.
+Tracktoon est une application web permettant de **suivre ses lectures de manhwas, manhuas et mangas** : bibliothèque personnelle, statut de lecture, favoris, notes, etc.
 
-Sommaire
+Le projet a été développé en PHP 8 (stack WAMP au départ), puis **conteneurisé avec Docker** et déployé sur **Render**, avec une base **MySQL-compatible hébergée sur TiDB Cloud**.
 
-Prérequis
+---
 
-Arborescence du projet
+## 🌐 Fonctionnalités principales
 
-Configuration de l’environnement
+- Page d’accueil présentant les séries mises en avant
+- Bibliothèque utilisateur :
+  - statut de lecture : à lire / en cours / terminé
+  - favoris
+  - commentaires personnels
+- Système de notes (`scores`) par utilisateur et par série
+- Gestion des genres (association `books_genders`)
+- Espace d’authentification :
+  - inscription
+  - connexion / déconnexion
+  - rôles : `user`, `admin`, `super_admin`
+- Pages FAQ, contact, mentions légales, etc.
+- Thème **sombre / clair** et quelques options d’accessibilité (dyslexie)
+- Envoi d’e-mails via **PHPMailer** (si variables SMTP configurées)
 
-Installation
+---
 
-Base de données
+## 🧱 Stack technique
 
-Lancer en local
+- **Langage** : PHP 8.3
+- **Serveur web** : Apache 2.4 (image Docker officielle `php:8.3-apache`)
+- **Base de données (prod)** : TiDB Cloud (compatible MySQL)
+- **Gestionnaire de dépendances** : Composer 2
+- **Templating** : Twig
+- **Styles** :
+  - Sass/SCSS (`styles/scss`)
+  - CSS compilé (`styles/css`)
+- **Tests** : PHPUnit (`test/`)
+- **Mailing** : PHPMailer
+- **Gestion de la configuration sensible** :
+  - `.env` local (non versionné)
+  - `phpdotenv`
+- **Conteneurisation** : Docker & Docker Hub
+- **Déploiement** : Render (web service Docker)
 
-Compilation des styles (Sass → CSS)
+---
 
-Tests unitaires
+## 🗂️ Architecture du projet
 
-Qualité/Validation W3C
+Arborescence principale :
 
-Conseils de prod / sécurité
-
-Dépannage
-
-Prérequis
-
-PHP 8.3 (extensions : pdo_mysql, mbstring, json, ctype, openssl, curl)
-
-Apache 2.4 (avec mod_rewrite activé)
-
-MySQL 5.7+ / 8+
-
-Composer 2.8+
-
-Node.js 18+ & npm (ou sass CLI) — pour compiler le SCSS
-
-(Windows) WAMP 3.3+ si vous préférez un stack packagé
-
-Optionnel :
-
-PHPUnit (installé via Composer dans vendor/)
-
-Docker Desktop si vous souhaitez conteneuriser
-
-Arborescence du projet
+```text
 Tracktoon/
 ├─ config/
 │  └─ autoload.php
@@ -68,188 +70,241 @@ Tracktoon/
 ├─ vendor/           # Composer
 ├─ index.php         # point d'entrée
 ├─ .env              # variables locales (non commité)
+├─ .env.docker       # variables pour Docker local
 ├─ composer.json / composer.lock
 ├─ package.json / package-lock.json
 └─ README.md
+Rôle des dossiers
+config/
 
-Configuration de l’environnement
+autoload.php : charge Composer + modèles + managers + services + contrôleurs.
 
-Les secrets et la configuration sensible sont chargés depuis .env via phpDotenv.
+models/ : entités métier (Users, Book, Scores, Library, Gender, etc.).
 
-Créez un fichier .env à la racine :
+managers/ :
 
-APP_ENV=local
-APP_DEBUG=true
+AbstractManager : ouvre la connexion PDO (MySQL/TiDB) en lisant les variables d’environnement.
 
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_NAME=anthelmejarreau_Tracktoon
-DB_USER=root
-DB_PASS=
+Managers spécifiques : UsersManager, BooksManager, etc.
+
+services/ :
+
+Router : résout les routes (?route=home, ?route=login, etc.).
+
+CSRFTokenManager : gestion des tokens CSRF.
+
+templates/ :
+
+Layout global : layouts/base.html.twig
+
+Pages : pages/...
+
+styles/ : SCSS source + CSS compilé.
+
+js/ : JavaScript (menu, thème sombre, etc.).
+
+test/ : tests unitaires PHPUnit.
+
+⚙️ Variables d’environnement
+L’application repose sur des variables d’environnement pour la base de données et l’envoi d’e-mails.
+
+Variables DB (communes Docker / Render / TiDB)
+
+APP_ENV=dev|prod
+APP_DEBUG=true|false
+
+DB_HOST=        # host TiDB ou MySQL
+DB_PORT=        # port (4000 pour TiDB Serverless, 3306 pour MySQL classique)
+DB_NAME=        # nom de la base (ex : test)
+DB_USER=        # utilisateur DB
+DB_PASSWORD=    # mot de passe DB
 DB_CHARSET=utf8mb4
 
-# Exemples d’autres variables
-MAILER_DSN=smtp://user:pass@smtp.example.com:587
+# Pour TiDB Cloud en TLS (Docker & Render)
+DB_SSL_CA_PATH=/etc/ssl/certs/ca-certificates.crt
+Dans AbstractManager, la connexion PDO est construite comme suit :
 
 
-📝 Ne commitez jamais .env. Le dépôt contient déjà un .gitignore.
+$host    = getenv('DB_HOST')     ?: ($_ENV['DB_HOST']     ?? '127.0.0.1');
+$port    = getenv('DB_PORT')     ?: ($_ENV['DB_PORT']     ?? '3306');
+$dbName  = getenv('DB_NAME')     ?: ($_ENV['DB_NAME']     ?? 'tracktoon');
+$charset = getenv('DB_CHARSET')  ?: ($_ENV['DB_CHARSET']  ?? 'utf8mb4');
+$user    = getenv('DB_USER')     ?: ($_ENV['DB_USER']     ?? 'root');
+$pass    = getenv('DB_PASSWORD') ?: ($_ENV['DB_PASSWORD'] ?? '');
+Et des options PDO supplémentaires permettent d’activer TLS pour TiDB :
 
-Installation
 
-Cloner le dépôt
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+];
 
-git clone <url-du-repo> Tracktoon
+$sslCaPath = getenv('DB_SSL_CA_PATH') ?: ($_ENV['DB_SSL_CA_PATH'] ?? null);
+if ($sslCaPath) {
+    $options[PDO::MYSQL_ATTR_SSL_CA] = $sslCaPath;
+    $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+}
+
+$this->db = new PDO($dsn, $user, $pass, $options);
+Variables mail (PHPMailer)
+
+MAIL_HOST=
+MAIL_PORT=
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_FROM=
+MAIL_FROM_NAME=
+MAIL_TO=
+Si elles restent vides, les fonctionnalités d’envoi d’email peuvent être désactivées ou gérées avec des garde-fous dans le code.
+
+💻 Installation & exécution en local (WAMP)
+Cloner le dépôt :
+git clone <url-du-repo>
 cd Tracktoon
 
-
-Installer les dépendances PHP
-
+Installer les dépendances PHP :
 composer install
 
+Installer les dépendances front (optionnel, si besoin de recompiler le CSS) :
+npm install
 
-Installer les dépendances front (pour Sass)
+# puis
+npm run build   # ou npm run dev selon package.json
+Créer un fichier .env à la racine et y définir au minimum :
 
-npm ci
-# ou, si vous n’utilisez pas npm : installez la CLI "sass"
+APP_ENV=dev
+APP_DEBUG=true
 
-
-Créer le fichier .env (voir plus haut)
-
-Base de données
-
-Le dump d’exemple (tel que fourni dans votre dossier projet) doit être importé dans MySQL.
-
-Créez au préalable la base anthelmejarreau_Tracktoon (ou adaptez DB_NAME dans .env).
-
-Import via phpMyAdmin
-
-Ouvrez phpMyAdmin → sélectionnez la base → onglet Importer → choisissez le fichier .sql → Exécuter.
-
-Import via CLI (si vous avez mysql en PATH)
-
-mysql -h 127.0.0.1 -u root -p
-# puis dans le client, exécutez:
-# USE anthelmejarreau_Tracktoon;
-# SOURCE /chemin/vers/dump.sql;
+DB_HOST=...
+DB_PORT=3306
+DB_NAME=...
+DB_USER=...
+DB_PASSWORD=...
+DB_CHARSET=utf8mb4
+Placer le projet dans le répertoire servi par WAMP (ou configurer un VirtualHost qui pointe vers ce dossier), puis accéder à :
 
 
-Le schéma crée les tables users, books, genders, scores, library, les relations & index.
-La colonne books.description peut être TEXT (recommandé pour de longues descriptions).
+http://localhost/Tracktoon
+🐳 Exécution en local avec Docker (image seule + TiDB Cloud)
+S’assurer que la base est accessible (TiDB Cloud, base test, tables importées).
 
-Lancer en local
-Option A — WAMP (recommandé sur Windows)
+Créer un fichier .env.docker :
 
-Placez le projet là où WAMP peut le servir, ou gardez-le où il est et configurez un VirtualHost pointant sur le dossier du projet.
+APP_ENV=dev
+APP_DEBUG=true
 
-Activez mod_rewrite (WAMP → Apache modules).
+DB_HOST=<host_tidb>
+DB_PORT=4000
+DB_NAME=test
+DB_USER=<user_tidb>
+DB_PASSWORD=<password_tidb>
+DB_CHARSET=utf8mb4
+DB_SSL_CA_PATH=/etc/ssl/certs/ca-certificates.crt
 
-Assurez-vous que index.php (à la racine) est accessible (ex. http://localhost/Tracktoon ou via votre vhost).
+# éventuellement les variables MAIL_*
+Builder l’image Docker :
+docker build -t tracktoon:latest .
 
-Option B — Apache “nu”
+Lancer le conteneur :
+docker run --rm -p 8080:80 --env-file .env.docker tracktoon:latest
 
-Créez un vhost (ex. tracktoon.local) qui pointe sur le dossier du projet.
-
-Activez mod_rewrite.
-
-Redémarrez Apache.
-
-Option C — Serveur PHP embarqué (pour debug rapide)
-
-⚠️ Non recommandé pour un usage réel : pas de réécriture avancée ni d’Apache.
-
-php -S localhost:8080 -t .
-# puis http://localhost:8080
-
-Compilation des styles (Sass → CSS)
-
-Le CSS consommé par l’app est le résultat compilé depuis styles/scss.
-
-Via npm (scripts)
-
-npm run build     # compilation de production (selon votre package.json)
-npm run dev       # watch (si prévu)
+Accéder au site :
 
 
-Via CLI sass (sans npm)
+http://localhost:8080
+🧪 Tests
+Les tests unitaires sont situés dans le dossier test/.
 
-sass styles/scss:styles/css --no-source-map --style=compressed
-
-
-Assurez-vous que templates/layouts/base.html.twig référence bien vos fichiers CSS compilés (ex. /styles/css/main.css).
-
-Tests unitaires
-
-Les tests se trouvent dans test/.
-
-Lancer PHPUnit
-
+Pour les exécuter :
 ./vendor/bin/phpunit
-# ou pour un fichier précis
-./vendor/bin/phpunit test/UserControllerRegisterTest.php
 
+ou, selon la config :
+php vendor/bin/phpunit
 
-Dans les tests, l’autoload.php du projet est requis depuis config/autoload.php.
-Le contrôleur UserController est “surchargé” dans les tests pour capter la redirection sans faire de header() réel.
+🗄️ Base de données (schéma)
+Le schéma est compatible MySQL / TiDB.
+Les tables principales :
 
-Qualité/Validation W3C
+users : utilisateurs (id, pseudo, mail, mot de passe hashé, rôle)
 
-Pour valider les pages avec le validateur W3C avant mise en ligne :
+books : œuvres (titre, type, description, image, chapitre, auteur)
 
-Lancer l’app localement (WAMP/Apache).
+genders : genres
 
-Ouvrir la page, afficher le code source (Ctrl+U).
+books_genders : table de liaison livres ↔ genres
 
-Copier ce HTML et le coller dans le validateur : https://validator.w3.org/#validate_by_input
+library : bibliothèque par utilisateur (statut, favori, commentaire)
 
-Corriger les éventuels problèmes (attributs, rôles ARIA redondants, select[required] sans placeholder, etc.).
+scores : notes (score) par utilisateur / livre
 
-Conseils de prod / sécurité
+users_books : autre table de liaison utilisateur / livre
 
-Twig auto-escape activé ('autoescape' => 'html') protège contre une large partie des failles XSS lors de l’affichage.
+Un script SQL complet (adapté à TiDB) est utilisé pour créer la base et insérer les données d’exemple.
 
-CSRF : jetons gérés par CSRFTokenManager.
-
-Mots de passe : hashés via password_hash() / vérifiés avec password_verify().
-
-Entrées : validez côté serveur (emails via filter_var, regex de mot de passe, etc.).
-
-Secrets : jamais en clair dans le code/depot ; toujours via variables d’environnement.
-
-phpMyAdmin : évitez de l’exposer en public.
-
-Dépannage
-
-Page blanche / 500 :
-
-Activez display_errors en local, vérifiez APP_ENV/APP_DEBUG, inspectez error_log Apache.
-
-Vérifiez que vendor/ est présent (faites composer install).
-
-Connexion DB échoue :
-
-Vérifiez les variables .env (DB_HOST, DB_NAME, DB_USER, DB_PASS, DB_PORT).
-
-Testez la connexion MySQL avec un client externe.
-
-CSS non appliqué :
-
-Compilez Sass → CSS.
-
-Vérifiez les chemins <link href="/styles/css/main.css">.
-
-Actions AJAX (notation / auto-save) non actives :
-
-Ouvrez la console du navigateur (F12) → onglet Network, regardez les requêtes POST.
-
-Confirmez la présence des bons data-* dans le HTML et que js/app.js est bien inclus.
-
-(Bonus) Démarrage rapide avec Docker
-
-Optionnel — si vous avez Docker Desktop et un Dockerfile.
+🚀 Déploiement
+1. Build & push de l’image Docker
 
 docker build -t tracktoon:latest .
-docker run -p 8080:80 --env-file .env tracktoon:latest
-# http://localhost:8080
+docker tag tracktoon:latest <dockerhub_user>/tracktoon:1.0.1
+docker push <dockerhub_user>/tracktoon:1.0.1
+2. Service web Render
+Créer un Web Service sur Render à partir d’une Existing image :
+
+Image : docker.io/<dockerhub_user>/tracktoon:1.0.1
+
+Port : 80
+
+Instance type : Free
+
+Dans l’onglet Environment, définir les mêmes variables que dans .env.docker, mais adaptées à la prod :
+
+APP_ENV=prod
+APP_DEBUG=false
+
+DB_HOST=<host_tidb>
+DB_PORT=4000
+DB_NAME=test
+DB_USER=<user_tidb>
+DB_PASSWORD=<password_tidb>
+DB_CHARSET=utf8mb4
+DB_SSL_CA_PATH=/etc/ssl/certs/ca-certificates.crt
+
+MAIL_HOST=
+MAIL_PORT=
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_FROM=
+MAIL_FROM_NAME=
+MAIL_TO=
+
+Laisser Render déployer, puis accéder à l’URL générée, par exemple :
+https://tracktoon-1-0-1.onrender.com/
 
 
-La DB peut rester externe (MySQL local/WAMP ou service managé). Renseignez simplement les variables DB_* dans .env ou via --env.
+🌍 Nom de domaine
+Par défaut, Render fournit une URL du type :
+
+https://tracktoon-1-0-1.onrender.com/
+Pour utiliser un domaine personnalisé (par exemple https://www.tracktoon.com) :
+
+Acheter le domaine chez un registrar (OVH, Gandi, Namecheap…).
+
+Ajouter ce domaine dans l’onglet Custom Domains du service Render.
+
+Créer les entrées DNS nécessaires (CNAME, etc.) côté registrar.
+
+
+📌 Notes
+Les fichiers .env et .env.docker ne sont pas commités dans le dépôt (ajoutés dans .gitignore).
+
+La configuration TLS pour TiDB Cloud est gérée par DB_SSL_CA_PATH et les options PDO.
+
+Le projet a été initialement développé en local sous WAMP, puis migré vers une architecture Docker + Render + TiDB Cloud pour le déploiement.
+
+
+Tu peux évidemment :
+
+- remplacer les `<dockerhub_user>`, `<host_tidb>`, etc. par tes vraies valeurs,
+- ajouter une section “Crédits” / “Auteur” si tu veux,
+- ou une section “Roadmap” pour lister des futures évolutions.
+::contentReference[oaicite:0]{index=0}
