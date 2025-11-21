@@ -211,33 +211,59 @@ document.addEventListener('DOMContentLoaded', function () {
       }, 2000);
     }
 
-    function sendSave() {
-      const statut = select ? select.value : '';
-      const favori = checkbox && checkbox.checked ? '1' : '';
+  function sendSave() {
+    const statut = select ? select.value : '';
+    const favori = checkbox && checkbox.checked ? '1' : '';
 
-      fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-        },
-        body: new URLSearchParams({
-          csrf_token: csrf,
-          book_id: bookId,
-          statut: statut,
-          favori: favori
-        })
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error('Erreur serveur');
-          return res.text();
-        })
-        .then(() => {
-          showMsg('Enregistré');
-        })
-        .catch(() => {
-          showMsg('Erreur enregistrement', true);
-        });
-    }
+  fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      'Accept': 'application/json',
+      'X-Requested-With': 'fetch' // petit signal côté serveur
+    },
+    body: new URLSearchParams({
+      csrf_token: csrf,
+      book_id: bookId,
+      statut: statut,
+      favori: favori
+    })
+  })
+    .then(async (res) => {
+      if (!res.ok) throw new Error('Erreur serveur');
+      // Tente toujours de parser le JSON; si ça rate, renvoie un objet vide
+      try { return await res.json(); } catch { return {}; }
+    })
+    .then((data) => {
+      showMsg('Enregistré');
+      if (data && data.counts) {
+        updateNavStats(data.counts);
+      }
+    })
+    .catch(() => {
+      showMsg('Erreur enregistrement', true);
+    });
+  }
+
+
+  function updateNavStats(counts) {
+    const nav = document.querySelector('.nav-stats');
+    if (!nav) return;
+
+    const elAll     = nav.querySelector('a[href*="filter=all"] strong');
+    const elALire   = nav.querySelector('a[href*="filter=a_lire"] strong');
+    const elEnCours = nav.querySelector('a[href*="filter=en_cours"] strong');
+    const elTermine = nav.querySelector('a[href*="filter=termine"] strong');
+    const elFavoris = nav.querySelector('a[href*="filter=favoris"] strong');
+
+    const totalAll = (counts.a_lire || 0) + (counts.en_cours || 0) + (counts.termine || 0);
+
+    if (elAll)     elAll.textContent     = totalAll;
+    if (elALire)   elALire.textContent   = counts.a_lire   ?? 0;
+    if (elEnCours) elEnCours.textContent = counts.en_cours ?? 0;
+    if (elTermine) elTermine.textContent = counts.termine  ?? 0;
+    if (elFavoris) elFavoris.textContent = counts.favoris  ?? 0;
+  }
 
     if (select) {
       select.addEventListener('change', sendSave);

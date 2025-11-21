@@ -91,33 +91,58 @@ class HomeController
         $_SESSION['contact_email'] = $email;
 
         try {
-            $mail = new PHPMailer\PHPMailer\PHPMailer(true);
-            $mail->isSMTP();
-            $mail->Host       = $_ENV['MAIL_HOST'];
-            $mail->SMTPAuth   = true;
-            $mail->Username   = $_ENV['MAIL_USERNAME'];
-            $mail->Password   = $_ENV['MAIL_PASSWORD'];
-            $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = (int)($_ENV['MAIL_PORT'] ?? 587);
+            $payload = [
+                'sender' => [
+                    'email' => $_ENV['BREVO_SENDER_EMAIL'],
+                    'name'  => $_ENV['BREVO_SENDER_NAME'] ?? 'Tracktoon',
+                ],
+                'to' => [
+                    ['email' => $_ENV['BREVO_TO_EMAIL']]
+                ],
+                'subject' => 'Nouveau message de contact',
+                'textContent' => 
+                    "Nom: {$name}\n" .
+                    "Email: {$email}\n\n" .
+                    "Message:\n{$message}\n",
+                'htmlContent' =>
+                    "<p><strong>Nom:</strong> ".htmlspecialchars($name)."</p>" .
+                    "<p><strong>Email:</strong> ".htmlspecialchars($email)."</p>" .
+                    "<p><strong>Message:</strong><br>" . nl2br(htmlspecialchars($message)) . "</p>",
+                'replyTo' => [
+                    'email' => $email,
+                    'name'  => $name,
+                ],
+            ];
 
-            $mail->setFrom($_ENV['MAIL_FROM'], $_ENV['MAIL_FROM_NAME'] ?? 'Tracktoon');
-            $mail->addAddress($_ENV['MAIL_TO']);
+            $ch = curl_init('https://api.brevo.com/v3/smtp/email');
+            curl_setopt_array($ch, [
+                CURLOPT_POST => true,
+                CURLOPT_HTTPHEADER => [
+                    'accept: application/json',
+                    'content-type: application/json',
+                    'api-key: ' . $_ENV['BREVO_API_KEY'],
+                ],
+                CURLOPT_POSTFIELDS => json_encode($payload),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 15,
+            ]);
 
-            $mail->addReplyTo($email, $name);
+            $response = curl_exec($ch);
+            $errno    = curl_errno($ch);
+            $status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
 
-            $mail->Subject = 'Nouveau message de contact';
-            $body  = "Nom: ".htmlspecialchars($name)."\n";
-            $body .= "Email: ".htmlspecialchars($email)."\n\n";
-            $body .= "Message:\n".htmlspecialchars($message)."\n";
-
-            $mail->Body    = $body;
-            $mail->AltBody = $body;
-
-            $mail->send();
+            if ($errno !== 0) {
+                throw new \RuntimeException('Erreur réseau cURL (Brevo).');
+            }
+            if ($status < 200 || $status >= 300) {
+                throw new \RuntimeException('Brevo a renvoyé un statut HTTP non 2xx.');
+            }
 
             $_SESSION['success']      = 'Message envoyé. Merci !';
             $_SESSION['last_contact'] = $now;
             header('Location:?route=contact'); exit;
+
         } catch (\Throwable $e) {
             $_SESSION['error'] = "Impossible d'envoyer le message pour le moment.";
             header('Location:?route=contact'); exit;

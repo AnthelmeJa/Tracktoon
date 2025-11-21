@@ -109,7 +109,6 @@ class LibraryController
             header('Location:?route=home'); 
             exit;
         }
-
         if (!$this->csrf || !$this->csrf->validate($_POST['csrf_token'] ?? '')) {
             $_SESSION['error'] = 'CSRF invalide.'; 
             header('Location:?route=home'); 
@@ -118,21 +117,50 @@ class LibraryController
 
         $userId = (int)$_SESSION['user_id'];
         $bookId = (int)($_POST['book_id'] ?? 0);
-        if ($bookId <= 0) {
+        if ($bookId <= 0) { 
             $_SESSION['error'] = 'Livre invalide.'; 
             header('Location:?route=home'); 
-            exit;
+            exit; 
         }
 
-        $statut  = $_POST['statut']  ?? 'a_lire';
-        $favori  = isset($_POST['favori']) && $_POST['favori'] === '1';
-        $comment = trim($_POST['comment'] ?? '');
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+        $xhr    = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+        $isAutoSave = array_key_exists('statut', $_POST) || array_key_exists('favori', $_POST);
+
+        $wantsJson = $isAutoSave || str_contains($accept, 'application/json') || !empty($xhr);
+
+        $existing = $this->library->findOne($userId, $bookId);
+
+        $statut = array_key_exists('statut', $_POST)
+            ? (string)$_POST['statut']
+            : ($existing ? $existing->getStatut() : 'a_lire');
+
+        $favori = array_key_exists('favori', $_POST)
+            ? (($_POST['favori'] === '1') ? true : false)
+            : ($existing ? $existing->isFavori() : false);
+
+        $comment = array_key_exists('comment', $_POST)
+            ? trim((string)$_POST['comment'])
+            : ($existing ? $existing->getComment() : '');
 
         try {
             $entry = new Library($userId, $bookId, $statut, $favori, $comment);
             $ok = $this->library->createOrUpdate($entry);
+
+            if ($wantsJson) {
+                $counts = $this->library->getCounts($userId);
+                header('Content-Type: application/json');
+                echo json_encode(['ok' => (bool)$ok, 'counts' => $counts], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
             $_SESSION['success'] = $ok ? 'Préférences enregistrées.' : 'Échec de l’enregistrement.';
         } catch (\Throwable $e) {
+            if ($wantsJson) {
+                header('Content-Type: application/json', true, 400);
+                echo json_encode(['ok' => false, 'error' => 'Entrées invalides.'], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
             $_SESSION['error'] = 'Entrées invalides.';
         }
 
