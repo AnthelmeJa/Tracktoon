@@ -64,8 +64,8 @@ class BooksManager extends AbstractManager
 
         $params = [];
 
-        if ($title !== null && $title !== '') {
-            $sql .= " AND b.title LIKE :title";
+       if ($title !== null && $title !== '') {
+            $sql .= " AND LOWER(b.title) LIKE LOWER(:title)";
             $params['title'] = '%' . $title . '%';
         }
 
