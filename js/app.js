@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function () {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
       'Accept': 'application/json',
-      'X-Requested-With': 'fetch' // petit signal côté serveur
+      'X-Requested-With': 'fetch'
     },
     body: new URLSearchParams({
       csrf_token: csrf,

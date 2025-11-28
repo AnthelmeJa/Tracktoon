@@ -24,13 +24,13 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html
 
 WORKDIR /var/www/html
 
-# On copie TOUT le projet (sans ce qui est ignoré par .dockerignore)
+# On copie TOUT le projet
 COPY . .
 
 # On copie le vendor généré par l'étape Composer
 COPY --from=composer /app/vendor /var/www/html/vendor
 
-# Permissions (simple mais efficace)
+# Permissions
 RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
